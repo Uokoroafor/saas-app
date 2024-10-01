@@ -1,0 +1,12 @@
+{%extends 'base.html' %}
+
+{% block head_title %} Myotha's Page {{block.super}} {% endblock head_title %}
+
+{% block content%} <p> Hello World or something of that ilk</p> 
+{% include 'snippets/welcome-user-msg.html' %}
+<p>Page Visits: {{page_visit_count}}</p>
+
+<p>Total Visits: {{total_visit_count}}</p>
+
+<p>Percent of Page Visits: {{percentage_split}}</p>
+{%endblock content %}
