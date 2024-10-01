@@ -10,11 +10,11 @@ ENV PATH=/opt/.venv/bin:$PATH
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Set the python-related environment variables
+# Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONBUFFERED 1
+ENV PYTHONUNBUFFERED 1
 
-# Install os dependencies for the mini vm
+# Install os dependencies for our mini vm
 RUN apt-get update && apt-get install -y \
     # for postgres
     libpq-dev \
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
     libcairo2 \
     # other
     gcc \
-    && rm -rm /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 
 # Create the mini vm's code directory
