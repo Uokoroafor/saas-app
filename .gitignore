@@ -1,3 +1,9 @@
+# Ignore Vendor Static Files
+src/staticfiles/vendors
+
+# Ignore local static file root
+local_cdn/
+
 .DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
