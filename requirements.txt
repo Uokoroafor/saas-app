@@ -6,3 +6,4 @@ dj-database-url
 python-decouple
 requests
 whitenoise
+django-allauth[socialaccount]
