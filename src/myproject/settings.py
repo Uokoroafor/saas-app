@@ -70,9 +70,12 @@ INSTALLED_APPS = [
     "visits",
     "commander",
     # Third Party
+    "allauth_ui",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "widget_tweaks",
+    "slippers",
 ]
 
 MIDDLEWARE = [
@@ -161,6 +164,10 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
     # ...
 ]
+
+
+# AllAuth UI Theme
+ALLAUTH_UI_THEME = "dark"
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {}
