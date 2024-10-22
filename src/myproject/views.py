@@ -13,6 +13,8 @@ def old_home_page_view(request, *args, **kwargs):
 
 
 def home_page_view(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        print(request.user.first_name)
     return about_view(request, *args, **kwargs)
 
 

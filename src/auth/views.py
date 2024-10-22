@@ -25,7 +25,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                print("Login Here Fam!")
+                print("Login Here Please!")
                 return redirect("/")
     return render(request, "auth/login.html", {})
 
