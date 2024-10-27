@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     # my-apps
     "visits",
     "commander",
+    "profiles",
     # Third Party
     "allauth_ui",
     "allauth",
