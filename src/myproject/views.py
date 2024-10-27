@@ -1,8 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.conf import settings
 from visits.models import PageVisit
 import pathlib
+
+LOGIN_URL = settings.LOGIN_URL
 
 this_dir = pathlib.Path(__file__).resolve().parent
 
@@ -54,5 +58,10 @@ def pw_protected_view(request, *args, **kwargs):
 
 @login_required
 def user_only_view(request, *args, **kwargs):
+
+    return render(request=request, template_name='protected/user-only.html', context={})
+
+@staff_member_required(login_url=LOGIN_URL)
+def staff_only_view(request, *args, **kwargs):
 
     return render(request=request, template_name='protected/user-only.html', context={})
