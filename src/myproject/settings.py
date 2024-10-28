@@ -174,7 +174,7 @@ ALLAUTH_UI_THEME = "dark"
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
-    'github': {
+    "github": {
         "VERIFIED EMAIL": True
         # 'SCOPE': [
         #     'user',
