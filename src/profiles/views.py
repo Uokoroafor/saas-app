@@ -17,6 +17,11 @@ def profile_list_view(request):
 def profile_detail_view(request,username=None, *args, **kwargs):
     # profile_user_obj = User.objects.get(username=username)
     user = request.user
+    print(user.has_perm("subscriptions.basic"),
+          user.has_perm("subscriptions.pro"),
+          user.has_perm("subscriptions.advanced"),
+          user.has_perm("subscriptions.basic_ai")
+    )
 
     profile_user_obj = get_object_or_404(User,username=username)
     is_logged_in_user= profile_user_obj==user
