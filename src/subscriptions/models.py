@@ -12,8 +12,9 @@ SUBSCRIPTION_PERMISSIONS = [
 # Create your models here.
 class Subscription(models.Model):
     name = models.CharField(max_length=120)
+    active=models.BooleanField(default=True)
     groups = models.ManyToManyField(Group)
-    permission = models.ManyToManyField(
+    permissions = models.ManyToManyField(
         Permission,
         limit_choices_to={
             "content_type__app_label": "subscriptions",
