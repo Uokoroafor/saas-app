@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "commander",
     "profiles",
     "subscriptions",
+    "customers",
     # Third Party
     "allauth_ui",
     "allauth",
