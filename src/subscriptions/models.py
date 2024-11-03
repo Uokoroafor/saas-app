@@ -56,7 +56,7 @@ def user_sub_post_save(sender, instance, *args, **kwargs):
         sub_qs = Subscription.objects.filter(active=True)
         if subscription_obj is not None:
             sub_qs = sub_qs.exclude(id=subscription_obj.id)
-        sub_groups = sub_qs.values_list("group__ids", flat=True)
+        sub_groups = sub_qs.values_list("groups__id", flat=True)
         sub_groups_set = set(sub_groups)
         # groups_ids = groups.values_list('id', flat=True)
         current_groups = user.groups.all().values_list("id", flat=True)
