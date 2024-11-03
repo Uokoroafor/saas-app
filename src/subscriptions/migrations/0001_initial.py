@@ -30,7 +30,12 @@ class Migration(migrations.Migration):
                     "permission",
                     models.ManyToManyField(
                         limit_choices_to={
-                            "codename__in": ["advanced", "pro", "basic", "basic_ai"],
+                            "codename__in": [
+                                "advanced",
+                                "pro",
+                                "basic",
+                                "basic_ai",
+                            ],
                             "content_type__app_label": "subscriptions",
                         },
                         to="auth.permission",

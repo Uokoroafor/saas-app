@@ -39,7 +39,9 @@ def about_view(request, *args, **kwargs):
     }
     html_template = "home.html"
     PageVisit.objects.create(path=request.path)
-    return render(request=request, template_name=html_template, context=my_context)
+    return render(
+        request=request, template_name=html_template, context=my_context
+    )
 
 
 VALID_CODE = "abc123"
@@ -54,18 +56,26 @@ def pw_protected_view(request, *args, **kwargs):
             is_allowed = 1
 
     if is_allowed:
-        return render(request=request, template_name="protected/view.html", context={})
+        return render(
+            request=request, template_name="protected/view.html", context={}
+        )
 
-    return render(request=request, template_name="protected/entry.html", context={})
+    return render(
+        request=request, template_name="protected/entry.html", context={}
+    )
 
 
 @login_required
 def user_only_view(request, *args, **kwargs):
 
-    return render(request=request, template_name="protected/user-only.html", context={})
+    return render(
+        request=request, template_name="protected/user-only.html", context={}
+    )
 
 
 @staff_member_required(login_url=LOGIN_URL)
 def staff_only_view(request, *args, **kwargs):
 
-    return render(request=request, template_name="protected/user-only.html", context={})
+    return render(
+        request=request, template_name="protected/user-only.html", context={}
+    )

@@ -46,7 +46,9 @@ class Customer(models.Model):
 
     all_auth_user_signed_up.connect(all_auth_user_signed_up_handler)
 
-    def all_auth_email_confirmed_handler(request, email_address, *args, **kwargs):
+    def all_auth_email_confirmed_handler(
+        request, email_address, *args, **kwargs
+    ):
 
         qs = Customer.objects.filter(
             init_email=email_address,

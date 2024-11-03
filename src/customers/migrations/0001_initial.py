@@ -26,7 +26,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("stripe_id", models.CharField(blank=True, max_length=120, null=True)),
+                (
+                    "stripe_id",
+                    models.CharField(blank=True, max_length=120, null=True),
+                ),
                 (
                     "user",
                     models.OneToOneField(

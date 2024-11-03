@@ -38,7 +38,9 @@ def register_view(request):
         password = request.POST["password"] or None
 
         try:
-            User.objects.create_user(username=username, email=email, password=password)
+            User.objects.create_user(
+                username=username, email=email, password=password
+            )
 
         except:
             pass
