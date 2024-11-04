@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import Group, Permission
 from django.db.models.signals import post_save
 from django.conf import settings
+import helpers.billing
 
 User = settings.AUTH_USER_MODEL  # auth.User
 
@@ -16,6 +17,8 @@ SUBSCRIPTION_PERMISSIONS = [
 
 # Create your models here.
 class Subscription(models.Model):
+    """ Stripe Product"""
+
     name = models.CharField(max_length=120)
     active = models.BooleanField(default=True)
     groups = models.ManyToManyField(Group)
@@ -26,12 +29,25 @@ class Subscription(models.Model):
             "codename__in": [x[0] for x in SUBSCRIPTION_PERMISSIONS],
         },
     )
+    stripe_id = models.CharField(max_length=120, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
         permissions = SUBSCRIPTION_PERMISSIONS
+
+    def save(self, *args, **kwargs):
+        if not self.stripe_id:
+            stripe_id = helpers.billing.create_product(
+                name=self.name,
+                metadata={
+                    "subscription_plan_id": self.id,
+                },
+                raw=False
+            )
+            self.stripe_id = stripe_id
+        super().save(*args, **kwargs)
 
 
 class UserSubscription(models.Model):
