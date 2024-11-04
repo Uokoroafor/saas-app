@@ -30,12 +30,19 @@ class Subscription(models.Model):
         },
     )
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
+    order = models.IntegerField(default=-1, help_text="Order on Django Pricing Page")
+    featured = models.BooleanField(default=True, help_text="Featured on Django Pricing page")
+
+    # Add Timestamps
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
         permissions = SUBSCRIPTION_PERMISSIONS
+        ordering=['order', 'featured','-updated']
 
     def save(self, *args, **kwargs):
         if not self.stripe_id:
@@ -48,6 +55,51 @@ class Subscription(models.Model):
             )
             self.stripe_id = stripe_id
         super().save(*args, **kwargs)
+
+
+class SubscriptionPrice(models.Model):
+    """ Stripe Price"""
+    class IntervalChoices(models.TextChoices):
+        MONTHLY = "month", "Monthly"
+        YEARLY = "year", "Annually"
+
+    Subscription=models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
+    stripe_id = models.CharField(max_length=120, null=True, blank=True)
+    interval = models.CharField(max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default = 9.99)
+    
+    
+    @property
+    def product_stripe_id(self):
+        if not self.Subscription:
+            return None
+        else:
+            return self.Subscription.stripe_id
+        
+    @property
+    def stripe_currency(self):
+        return "gbp"
+    
+    @property
+    def stripe_price(self):
+        """Need to remove decimals"""
+        return int(self.price*100)
+    
+    def save(self, *args, **kwargs):
+        if not self.stripe_id:
+            stripe_id = helpers.billing.create_price(
+                currency=self.stripe_currency,
+                unit_amount=self.stripe_price, 
+                recurring=self.interval, 
+                product=self.product_stripe_id,
+                metadata={
+                    "subscription_plan_price_id": self.id,
+                },
+                raw=False
+            )
+            self.stripe_id = stripe_id
+        super().save(*args, **kwargs)
+
 
 
 class UserSubscription(models.Model):
