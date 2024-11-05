@@ -67,8 +67,16 @@ class SubscriptionPrice(models.Model):
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
     interval = models.CharField(max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices)
     price = models.DecimalField(max_digits=10, decimal_places=2, default = 9.99)
+    order = models.IntegerField(default=-1, help_text="Order on Django Pricing Page")
+    featured = models.BooleanField(default=True, help_text="Featured on Django Pricing page")
+
+    # Add Timestamps
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     
-    
+    class Meta:
+        ordering=['Subscription__order','order', 'featured','-updated']
+
     @property
     def product_stripe_id(self):
         if not self.Subscription:
@@ -99,7 +107,10 @@ class SubscriptionPrice(models.Model):
             )
             self.stripe_id = stripe_id
         super().save(*args, **kwargs)
-
+        if self.featured and self.Subscription:
+            qs = SubscriptionPrice.objects.filter(Subscription=self.Subscription,
+                                                  interval = self.interval).exclude(id=self.id)
+            qs.update(featured=False)
 
 
 class UserSubscription(models.Model):
