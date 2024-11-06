@@ -20,6 +20,7 @@ class Subscription(models.Model):
     """ Stripe Product"""
 
     name = models.CharField(max_length=120)
+    subtitle = models.TextField(blank=True, null=True)
     active = models.BooleanField(default=True)
     groups = models.ManyToManyField(Group)
     permissions = models.ManyToManyField(
@@ -37,12 +38,19 @@ class Subscription(models.Model):
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    features=models.TextField(help_text="Specify the features of each plan with each feature on a new line!", blank=True, null=True)
+
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
         permissions = SUBSCRIPTION_PERMISSIONS
         ordering=['order', 'featured','-updated']
+
+    def get_features_as_list(self):
+        if not self.features:
+            return []
+        return [x.strip() for x in self.features.split("\n")]
 
     def save(self, *args, **kwargs):
         if not self.stripe_id:
@@ -73,6 +81,7 @@ class SubscriptionPrice(models.Model):
     # Add Timestamps
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
     
     class Meta:
         ordering=['Subscription__order','order', 'featured','-updated']
@@ -83,6 +92,27 @@ class SubscriptionPrice(models.Model):
             return None
         else:
             return self.Subscription.stripe_id
+        
+    @property
+    def display_sub_name(self):
+        if not self.Subscription:
+            return "Plan"
+        else:
+            return self.Subscription.name
+    
+    @property
+    def display_sub_subtitle(self):
+        if not self.Subscription:
+            return "Plan Description"
+        else:
+            return self.Subscription.subtitle
+        
+    @property
+    def display_features_list(self):
+        if not self.Subscription:
+            return []
+        else:
+            return self.Subscription.get_features_as_list()
         
     @property
     def stripe_currency(self):
