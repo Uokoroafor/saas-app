@@ -17,7 +17,7 @@ SUBSCRIPTION_PERMISSIONS = [
 
 # Create your models here.
 class Subscription(models.Model):
-    """ Stripe Product"""
+    """Stripe Product"""
 
     name = models.CharField(max_length=120)
     subtitle = models.TextField(blank=True, null=True)
@@ -32,20 +32,26 @@ class Subscription(models.Model):
     )
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
     order = models.IntegerField(default=-1, help_text="Order on Django Pricing Page")
-    featured = models.BooleanField(default=True, help_text="Featured on Django Pricing page")
+    featured = models.BooleanField(
+        default=True, help_text="Featured on Django Pricing page"
+    )
 
     # Add Timestamps
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    features=models.TextField(help_text="Specify the features of each plan with each feature on a new line!", blank=True, null=True)
+    features = models.TextField(
+        help_text="Specify the features of each plan with each feature on a new line!",
+        blank=True,
+        null=True,
+    )
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
         permissions = SUBSCRIPTION_PERMISSIONS
-        ordering=['order', 'featured','-updated']
+        ordering = ["order", "featured", "-updated"]
 
     def get_features_as_list(self):
         if not self.features:
@@ -59,32 +65,36 @@ class Subscription(models.Model):
                 metadata={
                     "subscription_plan_id": self.id,
                 },
-                raw=False
+                raw=False,
             )
             self.stripe_id = stripe_id
         super().save(*args, **kwargs)
 
 
 class SubscriptionPrice(models.Model):
-    """ Stripe Price"""
+    """Stripe Price"""
+
     class IntervalChoices(models.TextChoices):
         MONTHLY = "month", "Monthly"
         YEARLY = "year", "Annually"
 
-    Subscription=models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
+    Subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
-    interval = models.CharField(max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default = 9.99)
+    interval = models.CharField(
+        max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices
+    )
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=9.99)
     order = models.IntegerField(default=-1, help_text="Order on Django Pricing Page")
-    featured = models.BooleanField(default=True, help_text="Featured on Django Pricing page")
+    featured = models.BooleanField(
+        default=True, help_text="Featured on Django Pricing page"
+    )
 
     # Add Timestamps
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    
     class Meta:
-        ordering=['Subscription__order','order', 'featured','-updated']
+        ordering = ["Subscription__order", "order", "featured", "-updated"]
 
     @property
     def product_stripe_id(self):
@@ -92,54 +102,55 @@ class SubscriptionPrice(models.Model):
             return None
         else:
             return self.Subscription.stripe_id
-        
+
     @property
     def display_sub_name(self):
         if not self.Subscription:
             return "Plan"
         else:
             return self.Subscription.name
-    
+
     @property
     def display_sub_subtitle(self):
         if not self.Subscription:
             return "Plan Description"
         else:
             return self.Subscription.subtitle
-        
+
     @property
     def display_features_list(self):
         if not self.Subscription:
             return []
         else:
             return self.Subscription.get_features_as_list()
-        
+
     @property
     def stripe_currency(self):
         return "gbp"
-    
+
     @property
     def stripe_price(self):
         """Need to remove decimals"""
-        return int(self.price*100)
-    
+        return int(self.price * 100)
+
     def save(self, *args, **kwargs):
         if not self.stripe_id:
             stripe_id = helpers.billing.create_price(
                 currency=self.stripe_currency,
-                unit_amount=self.stripe_price, 
-                recurring=self.interval, 
+                unit_amount=self.stripe_price,
+                recurring=self.interval,
                 product=self.product_stripe_id,
                 metadata={
                     "subscription_plan_price_id": self.id,
                 },
-                raw=False
+                raw=False,
             )
             self.stripe_id = stripe_id
         super().save(*args, **kwargs)
         if self.featured and self.Subscription:
-            qs = SubscriptionPrice.objects.filter(Subscription=self.Subscription,
-                                                  interval = self.interval).exclude(id=self.id)
+            qs = SubscriptionPrice.objects.filter(
+                Subscription=self.Subscription, interval=self.interval
+            ).exclude(id=self.id)
             qs.update(featured=False)
 
 

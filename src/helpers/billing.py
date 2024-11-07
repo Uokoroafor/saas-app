@@ -17,18 +17,33 @@ def create_customer(name="", email="", raw=False, metadata={}):
         return response
     else:
         return response.id
-    
-def create_product(name="",raw=False, metadata={}):
-    response = stripe.Product.create(name=name,metadata=metadata)
+
+
+def create_product(name="", raw=False, metadata={}):
+    response = stripe.Product.create(name=name, metadata=metadata)
     if raw:
         return response
     else:
         return response.id
 
-def create_price(currency="gbp",unit_amount="9999", recurring="month", product=None,raw=False, metadata={}):
+
+def create_price(
+    currency="gbp",
+    unit_amount="9999",
+    recurring="month",
+    product=None,
+    raw=False,
+    metadata={},
+):
     if product is None:
         raise ValueError("No Product included for created price")
-    response = stripe.Price.create(currency=currency, unit_amount=unit_amount, product=product, recurring={"interval": recurring},metadata=metadata)
+    response = stripe.Price.create(
+        currency=currency,
+        unit_amount=unit_amount,
+        product=product,
+        recurring={"interval": recurring},
+        metadata=metadata,
+    )
     if raw:
         return response
     else:

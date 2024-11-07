@@ -28,9 +28,7 @@ class Command(BaseCommand):
 
         if set(completed_urls) == set(VENDOR_STATICFILES.values()):
             self.stdout.write(
-                self.style.SUCCESS(
-                    "Successfully updated all vendor static files."
-                )
+                self.style.SUCCESS("Successfully updated all vendor static files.")
             )
         else:
             self.stdout.write(
