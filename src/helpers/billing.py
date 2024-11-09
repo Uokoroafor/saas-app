@@ -67,5 +67,28 @@ def start_checkout_session(customer_id,
     
     if raw:
         return response
-    else:
-        return response.url
+    return response.url
+    
+
+def get_checkout_session(stripe_id, raw=False):
+    response=stripe.checkout.Session.retrieve(id=stripe_id)
+    if raw:
+        return response
+    return response.url
+
+def get_subscription(stripe_id, raw=False):
+    response=stripe.Subscription.retrieve(id=stripe_id)
+    if raw:
+        return response
+    return response.url
+
+def get_checkout_customer_plan(session_id):
+    checkout_response = get_checkout_session(session_id,raw=True)
+    customer_id = checkout_response.customer
+    sub_stripe_id = checkout_response.subscription
+    subscription_response = get_subscription(sub_stripe_id, raw=True)
+
+    sub_plan = subscription_response.plan
+    sub_plan_price_stripe_id = sub_plan.id
+
+    return customer_id, sub_plan_price_stripe_id
