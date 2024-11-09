@@ -44,7 +44,7 @@ def checkout_redirect_view(request):
 
 def checkout_finalise_view(request):
     session_id = request.GET.get('session_id')
-    customer_id, sub_plan_price_stripe_id = helpers.billing.get_checkout_customer_plan(session_id)
+    customer_id, sub_plan_price_stripe_id, sub_stripe_id = helpers.billing.get_checkout_customer_plan(session_id)
     
     # Get Subscription
     try:
@@ -60,11 +60,16 @@ def checkout_finalise_view(request):
     context = {}
 
     _user_sub_exists = False
+    updated_sub_options = {
+        "subscription": sub_obj,
+        "stripe_id": sub_stripe_id,
+        "user_cancelled": False
+    }
     try:
         _user_sub_obj = UserSubscription.objects.get(user=user_obj)
         _user_sub_exists = True
     except UserSubscription.DoesNotExist:
-        _user_sub_obj=UserSubscription.objects.create(user=user_obj, subscription=sub_obj)
+        _user_sub_obj=UserSubscription.objects.create(user=user_obj, **updated_sub_options)
     except:
         _user_sub_obj=None
     
@@ -75,8 +80,12 @@ def checkout_finalise_view(request):
 
     if _user_sub_exists:
         # cancel old sub
-
+        old_stripe_id = _user_sub_obj.stripe_id
+        if old_stripe_id is not None:
+            helpers.billing.cancel_subscription(old_stripe_id, reason="Created new membership. Auto cancelling old membership")
+        
         # This replaces the subscription in the database
-        _user_sub_obj.subscription=sub_obj
+        for key, value in updated_sub_options.items():
+            setattr(_user_sub_obj, key,value)
         _user_sub_obj.save()
     return render(request, "checkout/success.html", context=context)
