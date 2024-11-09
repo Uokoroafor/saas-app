@@ -41,7 +41,7 @@ urlpatterns = [
     ),
     path("checkout/sub-price/<str:price_id>", checkout_views.product_price_redirect_view, name='sub-price-checkout'),
     path("checkout/start/", checkout_views.checkout_redirect_view, name='stripe-checkout-start'),
-    path("checkout/success/", checkout_views.checkout_redirect_view, name='stripe-checkout-end'),
+    path("checkout/success/", checkout_views.checkout_finalise_view, name='stripe-checkout-end'),
     path("accounts/", include("allauth.urls")),
     path("about/", about_view),
     path("hello-world.html", home_page_view),
