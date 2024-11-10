@@ -2,6 +2,7 @@
 # See your keys here: https://dashboard.stripe.com/apikeys
 import stripe
 from decouple import config
+from . import date_utils
 
 DJANGO_DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="", cast=str)
@@ -102,4 +103,14 @@ def get_checkout_customer_plan(session_id):
     sub_plan = subscription_response.plan
     sub_plan_price_stripe_id = sub_plan.id
 
-    return customer_id, sub_plan_price_stripe_id, sub_stripe_id
+    current_period_start=date_utils.timestamp_as_datatime(subscription_response.current_period_start)
+    current_period_end=date_utils.timestamp_as_datatime(subscription_response.current_period_end)
+
+    response_data = dict(customer_id=customer_id,
+                         sub_plan_price_stripe_id=sub_plan_price_stripe_id,
+                         sub_stripe_id=sub_stripe_id,
+                         current_period_start=current_period_start,
+                         current_period_end=current_period_end,
+                         )
+
+    return response_data
