@@ -99,7 +99,7 @@ class SubscriptionPrice(models.Model):
 
     def get_checkout_url(self):
         return reverse("sub-price-checkout", kwargs={"price_id": self.id})
-    
+
     @property
     def product_stripe_id(self):
         if not self.Subscription:

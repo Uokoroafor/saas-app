@@ -228,4 +228,6 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = '/' # Otherwise it redirects to /accounts/profiles/ which I don't want
+LOGIN_REDIRECT_URL = (
+    "/"  # Otherwise it redirects to /accounts/profiles/ which I don't want
+)

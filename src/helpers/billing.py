@@ -49,49 +49,52 @@ def create_price(
     else:
         return response.id
 
-def start_checkout_session(customer_id,
-                           success_url="",
-                           cancel_url="",
-                           price_stripe_id="",
-                           raw=False):
-    
+
+def start_checkout_session(
+    customer_id, success_url="", cancel_url="", price_stripe_id="", raw=False
+):
+
     if not success_url.endswith("?session_id={CHECKOUT_SESSION_ID}"):
         success_url = f"{success_url}" + "?session_id={CHECKOUT_SESSION_ID}"
 
-    response = stripe.checkout.Session.create(customer=customer_id,
-                                              success_url=success_url,
-                                              cancel_url=cancel_url,
-                                              line_items=[{"price": price_stripe_id, "quantity": 1}], 
-                                              mode="subscription",
-                                              )
-    
+    response = stripe.checkout.Session.create(
+        customer=customer_id,
+        success_url=success_url,
+        cancel_url=cancel_url,
+        line_items=[{"price": price_stripe_id, "quantity": 1}],
+        mode="subscription",
+    )
+
     if raw:
         return response
     return response.url
-    
+
 
 def get_checkout_session(stripe_id, raw=False):
-    response=stripe.checkout.Session.retrieve(id=stripe_id)
+    response = stripe.checkout.Session.retrieve(id=stripe_id)
     if raw:
         return response
     return response.url
+
 
 def get_subscription(stripe_id, raw=False):
-    response=stripe.Subscription.retrieve(id=stripe_id)
+    response = stripe.Subscription.retrieve(id=stripe_id)
     if raw:
         return response
     return response.url
 
+
 def cancel_subscription(stripe_id, reason="Not stated", feedback="other", raw=False):
-    response=stripe.Subscription.cancel(stripe_id,
-                                        cancellation_details={"comment":reason,
-                                                              "feedback":feedback})
+    response = stripe.Subscription.cancel(
+        stripe_id, cancellation_details={"comment": reason, "feedback": feedback}
+    )
     if raw:
         return response
     return response.id
 
+
 def get_checkout_customer_plan(session_id):
-    checkout_response = get_checkout_session(session_id,raw=True)
+    checkout_response = get_checkout_session(session_id, raw=True)
     customer_id = checkout_response.customer
     sub_stripe_id = checkout_response.subscription
     subscription_response = get_subscription(sub_stripe_id, raw=True)
