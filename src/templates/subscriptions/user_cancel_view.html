@@ -1,0 +1,29 @@
+{%extends 'base.html' %}
+
+{% block head_title %} Cancel Your Subscription? {{block.super}} {% endblock head_title %}
+
+{% block content%} 
+{% if subscription.is_active %}
+<h1 class="text-lg font-medium">Are you sure you want to cancel your {{ subscription.plan_name }} ?</h1>
+
+<form action="" method="POST">{% csrf_token %}
+    <button type="submit" >Yes, Cancel</button>
+</form>
+<a href="{{ subscription.get_absolute_url }}">No, go back</a>
+{% else %}
+<h1 class="text-lg font-medium"> You no longer have an active subscription</h1>
+
+{% endif %}
+
+<!-- {% for k,v in subscription.items %}
+<p>{{k}}: {{v}}</p>
+{%endfor %} -->
+
+<!-- <p>Plan name: {{subscription.plan_name | title}} ({{subscription.get_status_display|title}})</p> -->
+
+<!-- <p>Start Date: {{subscription.current_period_start}}</p>
+
+<p>End Date: {{subscription.current_period_end}} ({{subscription.current_period_end | timeuntil}})</p>
+
+<p> Member for {{subscription.original_period_start | timesince}} (since {{subscription.original_period_start}} )</p> -->
+{%endblock content %}
