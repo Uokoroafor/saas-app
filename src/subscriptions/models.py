@@ -195,6 +195,23 @@ class UserSubscription(models.Model):
     #         return None
     #     return int(self.current_period_end.timestamp())
 
+    def get_absolute_url(self):
+        return reverse("user_subscription")
+    
+    @property
+    def plan_name(self):
+        if not self.subscription:
+            return None
+        return self.subscription.name
+
+    def serialise(self):
+        return{
+            "plan_name": self.plan_name,            
+            "current_period_start":self.current_period_start,
+            "current_period_end":self.current_period_end,
+            "status": self.status,
+        }
+
     def save(self, *args, **kwargs):
         if not self.original_period_start and self.current_period_start is not None:
             self.original_period_start = self.current_period_start

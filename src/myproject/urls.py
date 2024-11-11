@@ -55,6 +55,7 @@ urlpatterns = [
         name="stripe-checkout-end",
     ),
     path("accounts/", include("allauth.urls")),
+    path("accounts/billing/", subscription_views.user_subscription_view, name='user_subscription'),
     path("about/", about_view),
     path("hello-world.html", home_page_view),
     path("protected/", pw_protected_view),
