@@ -50,6 +50,15 @@ def create_price(
     else:
         return response.id
 
+def serialise_subscription_data(sub_response):
+    status = sub_response.status
+
+    current_period_start=date_utils.timestamp_as_datatime(sub_response.current_period_start)
+    current_period_end=date_utils.timestamp_as_datatime(sub_response.current_period_end)
+
+    return dict(current_period_start=current_period_start,
+                         current_period_end=current_period_end,
+                         status=status,)
 
 def start_checkout_session(
     customer_id, success_url="", cancel_url="", price_stripe_id="", raw=False
@@ -82,7 +91,7 @@ def get_subscription(stripe_id, raw=False):
     response = stripe.Subscription.retrieve(id=stripe_id)
     if raw:
         return response
-    return response.url
+    return serialise_subscription_data(sub_response=response)
 
 
 def cancel_subscription(stripe_id, reason="Not stated", feedback="other", raw=False):
@@ -93,7 +102,6 @@ def cancel_subscription(stripe_id, reason="Not stated", feedback="other", raw=Fa
         return response
     return response.id
 
-
 def get_checkout_customer_plan(session_id):
     checkout_response = get_checkout_session(session_id, raw=True)
     customer_id = checkout_response.customer
@@ -102,15 +110,17 @@ def get_checkout_customer_plan(session_id):
 
     sub_plan = subscription_response.plan
     sub_plan_price_stripe_id = sub_plan.id
+    # status = subscription_response.status
 
-    current_period_start=date_utils.timestamp_as_datatime(subscription_response.current_period_start)
-    current_period_end=date_utils.timestamp_as_datatime(subscription_response.current_period_end)
+    # current_period_start=date_utils.timestamp_as_datatime(subscription_response.current_period_start)
+    # current_period_end=date_utils.timestamp_as_datatime(subscription_response.current_period_end)
+
+    serialised_sub_data = serialise_subscription_data(sub_response=subscription_response)
 
     response_data = dict(customer_id=customer_id,
                          sub_plan_price_stripe_id=sub_plan_price_stripe_id,
                          sub_stripe_id=sub_stripe_id,
-                         current_period_start=current_period_start,
-                         current_period_end=current_period_end,
+                         **serialised_sub_data,
                          )
 
     return response_data
