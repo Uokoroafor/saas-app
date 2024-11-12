@@ -159,17 +159,19 @@ class SubscriptionPrice(models.Model):
 
 
 class SubscriptionStatus(models.TextChoices):
-        """
-        From stripe: Possible values are incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid, or paused.
-        """
-        ACTIVE = 'active', 'Active'
-        TRIALING = 'trialing', 'Trialing'
-        INCOMPLETE = 'incomplete', 'Incomplete'
-        INCOMPLETE_EXPIRED = 'incomplete_expired', 'Incomplete Expired'
-        PAST_DUE = 'past_due', 'Past Due'
-        CANCELED = 'canceled', 'Cancelled'
-        UNPAID = 'unpaid', 'Unpaid'
-        PAUSED = 'paused', 'Paused'
+    """
+    From stripe: Possible values are incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid, or paused.
+    """
+
+    ACTIVE = "active", "Active"
+    TRIALING = "trialing", "Trialing"
+    INCOMPLETE = "incomplete", "Incomplete"
+    INCOMPLETE_EXPIRED = "incomplete_expired", "Incomplete Expired"
+    PAST_DUE = "past_due", "Past Due"
+    CANCELED = "canceled", "Cancelled"
+    UNPAID = "unpaid", "Unpaid"
+    PAUSED = "paused", "Paused"
+
 
 class UserSubscription(models.Model):
 
@@ -180,10 +182,18 @@ class UserSubscription(models.Model):
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
     active = models.BooleanField(default=True)
     user_cancelled = models.BooleanField(default=False)
-    original_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    current_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    current_period_end=models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    status = models.CharField(max_length=20, null=True, blank=True, choices=SubscriptionStatus.choices)
+    original_period_start = models.DateTimeField(
+        auto_now=False, auto_now_add=False, blank=True, null=True
+    )
+    current_period_start = models.DateTimeField(
+        auto_now=False, auto_now_add=False, blank=True, null=True
+    )
+    current_period_end = models.DateTimeField(
+        auto_now=False, auto_now_add=False, blank=True, null=True
+    )
+    status = models.CharField(
+        max_length=20, null=True, blank=True, choices=SubscriptionStatus.choices
+    )
     cancel_at_period_end = models.BooleanField(default=False)
     # @property
     # def billing_cycle_anchor(self):
@@ -198,35 +208,33 @@ class UserSubscription(models.Model):
 
     def get_absolute_url(self):
         return reverse("user_subscription")
-    
+
     def get_cancel_url(self):
         return reverse("user_subscription_cancel")
-
 
     @property
     def plan_name(self):
         if not self.subscription:
             return None
         return self.subscription.name
-    
+
     @property
     def is_active(self):
         return self.status in [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING]
 
     def serialise(self):
-        return{
-            "plan_name": self.plan_name,            
-            "current_period_start":self.current_period_start,
-            "current_period_end":self.current_period_end,
+        return {
+            "plan_name": self.plan_name,
+            "current_period_start": self.current_period_start,
+            "current_period_end": self.current_period_end,
             "status": self.status,
         }
 
     def save(self, *args, **kwargs):
         if not self.original_period_start and self.current_period_start is not None:
             self.original_period_start = self.current_period_start
-        
-        super().save(*args, **kwargs)
 
+        super().save(*args, **kwargs)
 
 
 def user_sub_post_save(sender, instance, *args, **kwargs):

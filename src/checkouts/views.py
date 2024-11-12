@@ -49,13 +49,11 @@ def checkout_redirect_view(request):
 
 def checkout_finalise_view(request):
     session_id = request.GET.get("session_id")
-    checkout_data= (
-        helpers.billing.get_checkout_customer_plan(session_id)
-    )
+    checkout_data = helpers.billing.get_checkout_customer_plan(session_id)
 
-    customer_id = checkout_data.pop('customer_id')
-    sub_plan_price_stripe_id = checkout_data.pop('sub_plan_price_stripe_id')
-    sub_stripe_id  = checkout_data.pop('sub_stripe_id')
+    customer_id = checkout_data.pop("customer_id")
+    sub_plan_price_stripe_id = checkout_data.pop("sub_plan_price_stripe_id")
+    sub_stripe_id = checkout_data.pop("sub_stripe_id")
     # current_period_start = checkout_data.get('current_period_start')
     # current_period_end = checkout_data.get('current_period_end')
 
@@ -85,7 +83,6 @@ def checkout_finalise_view(request):
         "stripe_id": sub_stripe_id,
         "user_cancelled": False,
         **subscription_data,
-
     }
     try:
         _user_sub_obj = UserSubscription.objects.get(user=user_obj)
@@ -97,7 +94,14 @@ def checkout_finalise_view(request):
     except:
         _user_sub_obj = None
 
-    print("Subscription", sub_obj, "\nUser", user_obj, "\nUser Subscription", _user_sub_obj)
+    print(
+        "Subscription",
+        sub_obj,
+        "\nUser",
+        user_obj,
+        "\nUser Subscription",
+        _user_sub_obj,
+    )
     if None in [sub_obj, user_obj, _user_sub_obj]:
         return HttpResponseBadRequest(
             "There was an error with your requested purchase. Please contact us!"
@@ -106,7 +110,7 @@ def checkout_finalise_view(request):
     if _user_sub_exists:
         # cancel old sub
         old_stripe_id = _user_sub_obj.stripe_id
-        same_stripe_id = sub_stripe_id==old_stripe_id
+        same_stripe_id = sub_stripe_id == old_stripe_id
         if old_stripe_id is not None and not same_stripe_id:
             try:
                 helpers.billing.cancel_subscription(
