@@ -1,26 +1,21 @@
 from typing import Any
 from django.core.management.base import BaseCommand
-import helpers.billing
 
-from customers.models import Customer
-from subscriptions.models import UserSubscription
+import subscriptions.utils as subs_utils
 
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+        parser.add_argument("--clear-dangling", action="store_true", default=False)
+        return super().add_arguments(parser)
+
     def handle(self, *args: Any, **options: Any) -> str | None:
-        # So subscription model handles permissions
-        qs = Customer.objects.filter(stripe_id__isnull=False)
-        for customer_obj in qs:
-            user = customer_obj.user
-            
-            customer_stripe_id = customer_obj.stripe_id
-            print(f"Sync {user}'s ({customer_stripe_id}) subscriptions and remove old ones")
-            subscriptions=helpers.billing.get_customer_active_subscriptions(customer_stripe_id)
-            for sub in subscriptions:
-                existing_user_subs_qs = UserSubscription.objects.filter(stripe_id__iexact=f"{sub.id}".strip())
-                if not existing_user_subs_qs.exists():
-                    print(sub.id, existing_user_subs_qs.exists())
-                    helpers.billing.cancel_subscription(stripe_id=sub.id,
-                                                        reason="Dangling Active Subscription",
-                                                        cancel_at_period_end=True)
+        clear_dangling = options.get("clear_dangling")
+        if clear_dangling:
+            print("Clearing Active Subs not in use...")
+            subs_utils.clear_dangling_subscriptions()
+            print("Done!")
+        else:
+            print("Syncing Active Subs")
+            print("Done!")
