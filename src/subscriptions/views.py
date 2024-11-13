@@ -45,6 +45,7 @@ def user_subscription_view(
             for k, v in sub_data.items():
                 setattr(user_sub_obj, k, v)
             user_sub_obj.save()
+        messages.success(request, "Your plan details have been refreshed!")
         return redirect(user_sub_obj.get_absolute_url())
 
     return render(
@@ -64,6 +65,7 @@ def user_subscription_cancel_view(
                 user_sub_obj.stripe_id,
                 reason="User chose to end",
                 feedback="other",
+                cancel_at_period_end=True,
                 raw=False,
             )
             for k, v in sub_data.items():

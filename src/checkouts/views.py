@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -124,4 +125,6 @@ def checkout_finalise_view(request):
         for key, value in updated_sub_options.items():
             setattr(_user_sub_obj, key, value)
         _user_sub_obj.save()
+        messages.success(request, "Success. Great to have you onboard!")
+        return redirect(_user_sub_obj.get_absolute_url())
     return render(request, "checkout/success.html", context=context)
