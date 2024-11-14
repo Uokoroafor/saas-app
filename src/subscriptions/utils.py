@@ -1,8 +1,40 @@
+from typing import List, Optional
 import helpers.billing
 
 from customers.models import Customer
-from subscriptions.models import UserSubscription, Subscription
+from subscriptions.models import UserSubscription, Subscription, SubscriptionStatus
+from django.db.models import Q
 
+
+def refresh_active_users_subscriptions(user_ids: Optional[List | str | int]=None):
+    active_qs_lookup = (
+        Q(status = SubscriptionStatus.ACTIVE) |
+        Q(status=SubscriptionStatus.TRIALING)
+    )
+    qs=UserSubscription.objects.filter(active_qs_lookup)
+    user_ids_ = convert_user_ids_to_list(user_ids)
+    if user_ids_:
+        qs = qs.filter(user_id__in=user_ids_)
+
+    qs_count, complete = qs.count(), 0
+    for obj in qs:
+        if obj.stripe_id:
+            sub_data = helpers.billing.get_subscription(obj.stripe_id)
+            for k, v in sub_data.items():
+                setattr(obj, k, v)
+            obj.save()
+            complete+=1
+    return complete == qs_count
+
+def convert_user_ids_to_list(user_ids: Optional[List | str | int]):
+    if user_ids is None:
+        return []
+    elif isinstance(user_ids, list):
+        return user_ids
+    elif isinstance(user_ids, int):
+        return [user_ids]
+    elif isinstance(user_ids, str):
+        return [user_ids]
 
 def clear_dangling_subscriptions():
     # So subscription model handles permissions

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from subscriptions.models import SubscriptionPrice, UserSubscription
 import helpers.billing
-
+import subscriptions.utils as subs_utils
 
 # Create your views here.
 def subscription_price_view(request, interval="month"):
@@ -40,13 +40,14 @@ def user_subscription_view(
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     sub_data = user_sub_obj.serialise()
     if request.method == "POST":
-        if user_sub_obj.stripe_id:
-            sub_data = helpers.billing.get_subscription(user_sub_obj.stripe_id)
-            for k, v in sub_data.items():
-                setattr(user_sub_obj, k, v)
-            user_sub_obj.save()
-        messages.success(request, "Your plan details have been refreshed!")
+        finished = subs_utils.refresh_active_users_subscriptions(user_ids=request.user.id)
+        
+        if finished:
+            messages.success(request, "Your plan details have been refreshed!")
+        else:
+            messages.error(request, "Your plan details have not been refreshed please try again.")
         return redirect(user_sub_obj.get_absolute_url())
+        
 
     return render(
         request, "subscriptions/user_detail_view.html", {"subscription": user_sub_obj}
