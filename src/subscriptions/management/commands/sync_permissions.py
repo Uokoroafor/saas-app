@@ -5,6 +5,7 @@ from subscriptions.models import Subscription
 
 import utils as sub_utils
 
+
 class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> str | None:

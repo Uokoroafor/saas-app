@@ -173,22 +173,25 @@ class SubscriptionStatus(models.TextChoices):
     UNPAID = "unpaid", "Unpaid"
     PAUSED = "paused", "Paused"
 
+
 class UserSubscriptionQuerySet(models.QuerySet):
     def by_user_ids(self, user_ids=None):
-        qs=self
+        qs = self
         if isinstance(user_ids, list):
-            qs=self.filter(user_id__in=user_ids)
+            qs = self.filter(user_id__in=user_ids)
         elif isinstance(user_ids, int):
-            qs=self.filter(user_id__in=[user_ids])
+            qs = self.filter(user_id__in=[user_ids])
         elif isinstance(user_ids, str):
-            qs=self.filter(user_id__in=[user_ids])
+            qs = self.filter(user_id__in=[user_ids])
         return qs
+
     def by_active_trialling(self):
-        active_qs_lookup = (
-            Q(status = SubscriptionStatus.ACTIVE) |
-            Q(status=SubscriptionStatus.TRIALING))
+        active_qs_lookup = Q(status=SubscriptionStatus.ACTIVE) | Q(
+            status=SubscriptionStatus.TRIALING
+        )
         self.filter(active_qs_lookup)
         return self
+
 
 class UserSubscriptionManager(models.Manager):
     def get_queryset(self):

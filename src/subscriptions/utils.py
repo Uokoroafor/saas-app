@@ -6,7 +6,9 @@ from subscriptions.models import UserSubscription, Subscription, SubscriptionSta
 from django.db.models import Q
 
 
-def refresh_active_users_subscriptions(user_ids: Optional[List | str | int]=None, active_only=True, verbose=False):
+def refresh_active_users_subscriptions(
+    user_ids: Optional[List | str | int] = None, active_only=True, verbose=False
+):
     # active_qs_lookup = (
     #     Q(status = SubscriptionStatus.ACTIVE) |
     #     Q(status=SubscriptionStatus.TRIALING)
@@ -17,20 +19,27 @@ def refresh_active_users_subscriptions(user_ids: Optional[List | str | int]=None
     #     qs = qs.filter(user_id__in=user_ids_)
 
     # qs=UserSubscription.objects.filter(active_qs_lookup)
-    qs = UserSubscription.objects.all() if not active_only else UserSubscription.objects.all().by_active_trialling()
+    qs = (
+        UserSubscription.objects.all()
+        if not active_only
+        else UserSubscription.objects.all().by_active_trialling()
+    )
     if user_ids is not None:
-        qs=qs.by_user_ids(user_ids=user_ids)
+        qs = qs.by_user_ids(user_ids=user_ids)
     qs_count, complete = qs.count(), 0
     for obj in qs:
         if verbose:
-            print(f"Refreshing {obj.user} - Subscription [{obj.subscription}] - End Date [{obj.current_period_end}]")
+            print(
+                f"Refreshing {obj.user} - Subscription [{obj.subscription}] - End Date [{obj.current_period_end}]"
+            )
         if obj.stripe_id:
             sub_data = helpers.billing.get_subscription(obj.stripe_id)
             for k, v in sub_data.items():
                 setattr(obj, k, v)
             obj.save()
-            complete+=1
+            complete += 1
     return complete == qs_count
+
 
 def convert_user_ids_to_list(user_ids: Optional[List | str | int]):
     if user_ids is None:
@@ -42,23 +51,30 @@ def convert_user_ids_to_list(user_ids: Optional[List | str | int]):
     elif isinstance(user_ids, str):
         return [user_ids]
 
+
 def clear_dangling_subscriptions():
     # So subscription model handles permissions
     qs = Customer.objects.filter(stripe_id__isnull=False)
     for customer_obj in qs:
         user = customer_obj.user
-        
+
         customer_stripe_id = customer_obj.stripe_id
         print(f"Sync {user}'s ({customer_stripe_id}) subscriptions and remove old ones")
-        subscriptions=helpers.billing.get_customer_active_subscriptions(customer_stripe_id)
+        subscriptions = helpers.billing.get_customer_active_subscriptions(
+            customer_stripe_id
+        )
         for sub in subscriptions:
-            existing_user_subs_qs = UserSubscription.objects.filter(stripe_id__iexact=f"{sub.id}".strip())
+            existing_user_subs_qs = UserSubscription.objects.filter(
+                stripe_id__iexact=f"{sub.id}".strip()
+            )
             if not existing_user_subs_qs.exists():
                 print(sub.id, existing_user_subs_qs.exists())
-                helpers.billing.cancel_subscription(stripe_id=sub.id,
-                                                    reason="Dangling Active Subscription",
-                                                    cancel_at_period_end=True)
-                
+                helpers.billing.cancel_subscription(
+                    stripe_id=sub.id,
+                    reason="Dangling Active Subscription",
+                    cancel_at_period_end=True,
+                )
+
 
 def sync_subscription_group_permissions():
     # So subscription model handles permissions
