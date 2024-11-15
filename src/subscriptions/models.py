@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import Group, Permission
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.conf import settings
 import helpers.billing
@@ -172,6 +173,30 @@ class SubscriptionStatus(models.TextChoices):
     UNPAID = "unpaid", "Unpaid"
     PAUSED = "paused", "Paused"
 
+class UserSubscriptionQuerySet(models.QuerySet):
+    def by_user_ids(self, user_ids=None):
+        qs=self
+        if isinstance(user_ids, list):
+            qs=self.filter(user_id__in=user_ids)
+        elif isinstance(user_ids, int):
+            qs=self.filter(user_id__in=[user_ids])
+        elif isinstance(user_ids, str):
+            qs=self.filter(user_id__in=[user_ids])
+        return qs
+    def by_active_trialling(self):
+        active_qs_lookup = (
+            Q(status = SubscriptionStatus.ACTIVE) |
+            Q(status=SubscriptionStatus.TRIALING))
+        self.filter(active_qs_lookup)
+        return self
+
+class UserSubscriptionManager(models.Manager):
+    def get_queryset(self):
+        return UserSubscriptionQuerySet(self.model, self._db)
+
+    def by_user_ids(self, user_ids=None):
+        return self.get_queryset().by_user_ids(user_ids=user_ids)
+
 
 class UserSubscription(models.Model):
 
@@ -195,6 +220,8 @@ class UserSubscription(models.Model):
         max_length=20, null=True, blank=True, choices=SubscriptionStatus.choices
     )
     cancel_at_period_end = models.BooleanField(default=False)
+
+    objects = UserSubscriptionManager()
     # @property
     # def billing_cycle_anchor(self):
     #     """

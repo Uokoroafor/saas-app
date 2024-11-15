@@ -6,18 +6,24 @@ from subscriptions.models import UserSubscription, Subscription, SubscriptionSta
 from django.db.models import Q
 
 
-def refresh_active_users_subscriptions(user_ids: Optional[List | str | int]=None):
-    active_qs_lookup = (
-        Q(status = SubscriptionStatus.ACTIVE) |
-        Q(status=SubscriptionStatus.TRIALING)
-    )
-    qs=UserSubscription.objects.filter(active_qs_lookup)
-    user_ids_ = convert_user_ids_to_list(user_ids)
-    if user_ids_:
-        qs = qs.filter(user_id__in=user_ids_)
+def refresh_active_users_subscriptions(user_ids: Optional[List | str | int]=None, active_only=True, verbose=False):
+    # active_qs_lookup = (
+    #     Q(status = SubscriptionStatus.ACTIVE) |
+    #     Q(status=SubscriptionStatus.TRIALING)
+    # )
+    # qs=UserSubscription.objects.filter(active_qs_lookup)
+    # user_ids_ = convert_user_ids_to_list(user_ids)
+    # if user_ids_:
+    #     qs = qs.filter(user_id__in=user_ids_)
 
+    # qs=UserSubscription.objects.filter(active_qs_lookup)
+    qs = UserSubscription.objects.all() if not active_only else UserSubscription.objects.all().by_active_trialling()
+    if user_ids is not None:
+        qs=qs.by_user_ids(user_ids=user_ids)
     qs_count, complete = qs.count(), 0
     for obj in qs:
+        if verbose:
+            print(f"Refreshing {obj.user} - Subscription [{obj.subscription}] - End Date [{obj.current_period_end}]")
         if obj.stripe_id:
             sub_data = helpers.billing.get_subscription(obj.stripe_id)
             for k, v in sub_data.items():

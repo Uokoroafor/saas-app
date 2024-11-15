@@ -40,12 +40,12 @@ def user_subscription_view(
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     sub_data = user_sub_obj.serialise()
     if request.method == "POST":
-        finished = subs_utils.refresh_active_users_subscriptions(user_ids=request.user.id)
+        finished = subs_utils.refresh_active_users_subscriptions(user_ids=request.user.id,active_only=False)
         
         if finished:
             messages.success(request, "Your plan details have been refreshed!")
         else:
-            messages.error(request, "Your plan details have not been refreshed please try again.")
+            messages.error(request, "Your plan details have not been refreshed. Please contact us.")
         return redirect(user_sub_obj.get_absolute_url())
         
 
