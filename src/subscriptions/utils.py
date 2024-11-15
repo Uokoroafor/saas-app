@@ -7,7 +7,13 @@ from django.db.models import Q
 
 
 def refresh_active_users_subscriptions(
-    user_ids: Optional[List | str | int] = None, active_only=True, verbose=False
+    user_ids: Optional[List | str | int] = None,
+    active_only=True,
+    verbose=False,
+    days_remaining=0,
+    days_since=0,
+    from_days=0,
+    to_days=0,
 ):
     # active_qs_lookup = (
     #     Q(status = SubscriptionStatus.ACTIVE) |
@@ -26,6 +32,19 @@ def refresh_active_users_subscriptions(
     )
     if user_ids is not None:
         qs = qs.by_user_ids(user_ids=user_ids)
+
+    if days_since > 0:
+        qs = qs.by_days_since(days_since)
+
+    if days_remaining > 0:
+        qs = qs.by_days_remaining(days_remaining)
+
+    if from_days < to_days:
+        qs = qs.by_days_range(from_days=from_days, to_days=to_days)
+    else:
+        pass
+        # TODO Add warnings if from_days exceeds end_days
+
     qs_count, complete = qs.count(), 0
     for obj in qs:
         if verbose:

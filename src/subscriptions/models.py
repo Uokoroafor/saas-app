@@ -5,6 +5,8 @@ from django.db.models.signals import post_save
 from django.conf import settings
 import helpers.billing
 from django.urls import reverse
+from django.utils import timezone
+import datetime
 
 User = settings.AUTH_USER_MODEL  # auth.User
 
@@ -189,8 +191,47 @@ class UserSubscriptionQuerySet(models.QuerySet):
         active_qs_lookup = Q(status=SubscriptionStatus.ACTIVE) | Q(
             status=SubscriptionStatus.TRIALING
         )
-        self.filter(active_qs_lookup)
-        return self
+        qs = self.filter(active_qs_lookup)
+        return qs
+
+    def by_days_remaining(self, days_remaining=7):
+        now = timezone.now()
+        in_n_days = now + datetime.timedelta(days=days_remaining)
+        start_of_day = in_n_days.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = in_n_days.replace(
+            hour=23, minute=59, second=59, microsecond=999_999
+        )
+        qs = self.filter(
+            current_period_end__gte=start_of_day, current_period_end__lte=end_of_day
+        )
+        return qs
+
+    def by_days_since(self, days_since=7):
+        now = timezone.now()
+        for_n_days = now - datetime.timedelta(days=days_since)
+        start_of_day = for_n_days.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = for_n_days.replace(
+            hour=23, minute=59, second=59, microsecond=999_999
+        )
+        qs = self.filter(
+            current_period_end__gte=start_of_day, current_period_end__lte=end_of_day
+        )
+        return qs
+
+    def by_days_range(self, from_days, to_days):
+        now = timezone.now()
+        from_days_from_now = now + datetime.timedelta(days=from_days)
+        to_days_from_now = now + datetime.timedelta(days=to_days)
+        start_date = from_days_from_now.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        end_date = to_days_from_now.replace(
+            hour=23, minute=59, second=59, microsecond=999_999
+        )
+        qs = self.filter(
+            current_period_end__gte=start_date, current_period_end__lte=end_date
+        )
+        return qs
 
 
 class UserSubscriptionManager(models.Manager):
