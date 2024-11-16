@@ -2,7 +2,7 @@ name: django-tests-with-db-neon
 on:
   workflow_dispatch: # So I can run this at any time
   push:
-    branch:
+    branches:
       - dev
   # pull_request:
   #   branch:
@@ -33,20 +33,20 @@ jobs:
       - name: Delete previous branch version
         continue-on-error: true
         run: |
-          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{ env.NEON_PROEJCT_ID }}"
+          neonctl branches delete "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}"
       - name: Create new branch version
         run: |
-          neonctl branches create --name "${{env.NEON_GITHUB_BRANCH}}" --parent "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}"
+          neonctl branches create --name "${{ env.NEON_GITHUB_BRANCH }}" --parent "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}"
 
       - name: Grab new branch database url
         run: |
           DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}")
-          echo "DATABASE_URL=$DB_CONNECTION_STRING" >>$GITHUB_ENV
+          echo "DATABASE_URL=$DB_CONNECTION_STRING" >> $GITHUB_ENV
 
       - name: Setup Django Secret Key
         run: |
           GENERATED_KEY=$(openssl rand -base64 32)
-          echo "DJANGO_SECRET_KEY=$GENERATED_KEY" >>$GITHUB_ENV
+          echo "DJANGO_SECRET_KEY=$GENERATED_KEY" >> $GITHUB_ENV
       - name: Install Requirements
       run: |
         python -m pip install pip --upgrade
