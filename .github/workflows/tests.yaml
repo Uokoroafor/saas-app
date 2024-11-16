@@ -1,9 +1,9 @@
 name: django-tests-with-db-neon
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
-      - dev
+      - main
 
 jobs:
   test:

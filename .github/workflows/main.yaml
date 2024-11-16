@@ -30,7 +30,7 @@ jobs:
           npm install -g neonctl
       - name: Grab Database URL
         run: |
-          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROJECT_ID }}")
+          DB_CONNECTION_STRING=$(neonctl connections-string --branch "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROJECT_ID }}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >> $GITHUB_ENV
       - name: Setup Django Secret Key
         run: |
