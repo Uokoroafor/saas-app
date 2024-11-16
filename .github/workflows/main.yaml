@@ -36,7 +36,7 @@ jobs:
 
       - name: Grab Database URL
         run: |
-          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}")
+          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >>$GITHUB_ENV
 
       - name: Setup Django Secret Key
@@ -55,12 +55,12 @@ jobs:
      
       - name: User Syncronisation Command
       if: github.event.schedule == '1 0 1 * * *'
-        working-directory: ./src
-        run: |
-          python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
+      working-directory: ./src
+      run: |
+        python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
       
       - name: Clear Dangling Stripe Subscriptions Commands
       if: github.event.schedule == '0 1 20 * * *'
-        working-directory: ./src
-        run: |
-          python manage.py sync_user_subscriptions --clear-dangling
+      working-directory: ./src
+      run: |
+        python manage.py sync_user_subscriptions --clear-dangling
