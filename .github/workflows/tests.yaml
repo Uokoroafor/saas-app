@@ -38,7 +38,7 @@ jobs:
 
       - name: Grab new branch database url
         run: |
-          DB_CONNECTION_STRING = $(neonctl connection-string --branch "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}")
+          DB_CONNECTION_STRING=$(neonctl connection-string --branch "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >> $GITHUB_ENV
 
       - name: Setup Django Secret Key
