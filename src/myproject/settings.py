@@ -48,7 +48,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = str(os.environ.get("DEBUG")).lower()=='true'
 DEBUG = config("DJANGO_DEBUG", cast=bool)
-
+BASE_URL = config("BASE_URL", default=None)
 ALLOWED_HOSTS = [
     ".railway.app",
 ]
@@ -69,11 +69,15 @@ INSTALLED_APPS = [
     # my-apps
     "visits",
     "commander",
+    "profiles",
+    "subscriptions",
+    "customers",
     # Third Party
     "allauth_ui",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
     "widget_tweaks",
     "slippers",
 ]
@@ -129,7 +133,9 @@ if DATABASE_URL is not None:
 
     DATABASES = {
         "default": dj_database_url.config(
-            default=DATABASE_URL, conn_health_checks=True, conn_max_age=CONN_MAX_AGE
+            default=DATABASE_URL,
+            conn_health_checks=True,
+            conn_max_age=CONN_MAX_AGE,
         )
     }
 
@@ -170,7 +176,17 @@ AUTHENTICATION_BACKENDS = [
 ALLAUTH_UI_THEME = "dark"
 
 # Provider specific settings
-SOCIALACCOUNT_PROVIDERS = {}
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "VERIFIED EMAIL": True
+        # 'SCOPE': [
+        #     'user',
+        #     'repo',
+        #     'read:org',
+        # ],
+    }
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -211,3 +227,7 @@ STORAGES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_REDIRECT_URL = (
+    "/"  # Otherwise it redirects to /accounts/profiles/ which I don't want
+)

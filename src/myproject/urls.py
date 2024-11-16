@@ -18,15 +18,58 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from auth import views as auth_views
-from .views import home_page_view, about_view
+from subscriptions import views as subscription_views
+from checkouts import views as checkout_views
+from .views import (
+    home_page_view,
+    about_view,
+    pw_protected_view,
+    user_only_view,
+    staff_only_view,
+)
 
 urlpatterns = [
-    path("", home_page_view, name='home'),  # Root page
+    path("", home_page_view, name="home"),  # Root page
     path("hello-world/", home_page_view),
     path("login/", auth_views.login_view),
     path("register/", auth_views.register_view),
+    path("pricing/", subscription_views.subscription_price_view, name="pricing"),
+    path(
+        "pricing/<str:interval>/",
+        subscription_views.subscription_price_view,
+        name="pricing_interval",
+    ),
+    path(
+        "checkout/sub-price/<str:price_id>",
+        checkout_views.product_price_redirect_view,
+        name="sub-price-checkout",
+    ),
+    path(
+        "checkout/start/",
+        checkout_views.checkout_redirect_view,
+        name="stripe-checkout-start",
+    ),
+    path(
+        "checkout/success/",
+        checkout_views.checkout_finalise_view,
+        name="stripe-checkout-end",
+    ),
     path("accounts/", include("allauth.urls")),
+    path(
+        "accounts/billing/",
+        subscription_views.user_subscription_view,
+        name="user_subscription",
+    ),
+    path(
+        "accounts/billing/cancel",
+        subscription_views.user_subscription_cancel_view,
+        name="user_subscription_cancel",
+    ),
     path("about/", about_view),
     path("hello-world.html", home_page_view),
+    path("protected/", pw_protected_view),
+    path("protected/user-only/", user_only_view),
+    path("protected/staff-only/", staff_only_view),
+    path("profiles/", include("profiles.urls")),
     path("admin/", admin.site.urls),
 ]
