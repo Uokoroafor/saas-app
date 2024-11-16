@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DJANGO_DEBUG: 0
-      NEON_API_KEY: ${{secrets.NEON_API_KEY}}
-      NEON_PROJECT_ID: ${{secrets.NEON_PROJECT_ID}}
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
       NEON_PROD_BRANCH: "main"
       NEON_GITHUB_BRANCH: "gh-test"
     steps:
@@ -33,14 +33,14 @@ jobs:
       - name: Delete previous branch version
         continue-on-error: true
         run: |
-          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}"
+          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{ env.NEON_PROEJCT_ID }}"
       - name: Create new branch version
         run: |
-          neonctl branches create --name "${{env.NEON_GITHUB_BRANCH}}" --parent "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}"
+          neonctl branches create --name "${{env.NEON_GITHUB_BRANCH}}" --parent "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}"
 
       - name: Grab new branch database url
         run: |
-          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}")
+          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >>$GITHUB_ENV
 
       - name: Setup Django Secret Key
@@ -63,5 +63,5 @@ jobs:
       - name: Clean Up Test branch version
         continue-on-error: true
         run: |
-          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}"
+          neonctl branches delete "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}"
 

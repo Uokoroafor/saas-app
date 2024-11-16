@@ -10,9 +10,9 @@ jobs:
     env:
       DJANGO_DEBUG: 0
       STRIPE_TEST_KEY_OVERRIDE: 1
-      STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
-      NEON_API_KEY: ${{secrets.NEON_API_KEY}}
-      NEON_PROJECT_ID: ${{secrets.NEON_PROJECT_ID}}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
       NEON_PROD_BRANCH: "main"
     steps:
       - name: Checkout Code
@@ -30,7 +30,7 @@ jobs:
           npm install -g neonctl
       - name: Grab Database URL
         run: |
-          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")
+          DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROJECT_ID }}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >>$GITHUB_ENV
       - name: Setup Django Secret Key
         run: |
