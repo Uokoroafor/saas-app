@@ -33,14 +33,16 @@ jobs:
       - name: Delete previous branch version
         continue-on-error: true
         run: |
-          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}
+          neonctl branches delete "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}"
       - name: Create new branch version
         run: |
           neonctl branches create --name "${{env.NEON_GITHUB_BRANCH}}" --parent "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}"
+
       - name: Grab new branch database url
         run: |
           DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{env.NEON_GITHUB_BRANCH}}" --project-id "${{env.NEON_PROEJCT_ID}}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >>$GITHUB_ENV
+
       - name: Setup Django Secret Key
         run: |
           GENERATED_KEY=$(openssl rand -base64 32)
@@ -49,6 +51,7 @@ jobs:
       run: |
         python -m pip install pip --upgrade
         python -m pip install -r requirements.txt
+      
       - name: Make Django DB Migrations
         working-directory: ./src
         run: |
