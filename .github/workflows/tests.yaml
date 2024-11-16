@@ -1,7 +1,10 @@
 name: django-tests-with-db-neon
 on:
-  workflow_dispatch: # Means I can run this at any time
-  push:
+  workflow_dispatch: # So I can run this at any time
+  # push:
+  #   branch:
+  #     -main
+  pull_request:
     branch:
       -main
 
