@@ -1,12 +1,12 @@
 name: django-tests-with-db-neon
 on:
   workflow_dispatch: # So I can run this at any time
-  # push:
-  #   branch:
-  #     -main
-  pull_request:
+  push:
     branch:
-      -main
+      - dev
+  # pull_request:
+  #   branch:
+  #     - main
 
 jobs:
   test:
@@ -60,8 +60,8 @@ jobs:
       
       - name: Make Django DB Migrations
         working-directory: ./src
-          run: |
-            python manage.py migrate
+        run: |
+          python manage.py migrate
       - name: Django Test Requirements
       working-directory: ./src
       run: |

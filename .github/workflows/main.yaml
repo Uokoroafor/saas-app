@@ -56,11 +56,11 @@ jobs:
       - name: User Syncronisation Command
       if: github.event.schedule == '1 0 1 * * *'
         working-directory: ./src
-          run: |
-            python sync_user_subscriptions --verbose --from-days 0 --to-days 1
+        run: |
+          python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
       
       - name: Clear Dangling Stripe Subscriptions Commands
       if: github.event.schedule == '0 1 20 * * *'
         working-directory: ./src
-          run: |
-            python manage.py sync_user_subscriptions --clear-dangling
+        run: |
+          python manage.py sync_user_subscriptions --clear-dangling
