@@ -57,7 +57,7 @@ jobs:
       - name: Django Test Requirements
         working-directory: ./src
         run: |
-        python manage.py test
+          python manage.py test
       - name: Clean Up Test branch version
         continue-on-error: true
         run: |
