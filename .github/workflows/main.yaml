@@ -50,8 +50,8 @@ jobs:
       
       - name: Make Django DB Migrations
         working-directory: ./src
-          run: |
-            python manage.py migrate
+        run: |
+          python manage.py migrate
      
       - name: User Syncronisation Command
       if: github.event.schedule == '1 0 1 * * *'
