@@ -15,7 +15,6 @@ jobs:
       NEON_API_KEY: ${{secrets.NEON_API_KEY}}
       NEON_PROJECT_ID: ${{secrets.NEON_PROJECT_ID}}
       NEON_PROD_BRANCH: "main"
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,7 +22,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -32,13 +30,10 @@ jobs:
       - name: Install Neon CLI
         run: |
           npm install -g neonctl
-
-
       - name: Grab Database URL
         run: |
           DB_CONNECTION_STRING = $(neonctl connections-string --branch "${{env.NEON_PROD_BRANCH}}" --project-id "${{env.NEON_PROJECT_ID}}")
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >>$GITHUB_ENV
-
       - name: Setup Django Secret Key
         run: |
           GENERATED_KEY=$(openssl rand -base64 32)
@@ -47,18 +42,15 @@ jobs:
         run: |
           python -m pip install pip --upgrade
           python -m pip install -r requirements.txt
-      
       - name: Make Django DB Migrations
         working-directory: ./src
         run: |
           python manage.py migrate
-     
       - name: User Syncronisation Command
       if: github.event.schedule == '1 0 1 * * *'
       working-directory: ./src
       run: |
         python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
-      
       - name: Clear Dangling Stripe Subscriptions Commands
       if: github.event.schedule == '0 1 20 * * *'
       working-directory: ./src
