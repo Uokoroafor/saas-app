@@ -1,12 +1,10 @@
 name: django-tests-with-db-neon
 on:
-  workflow_dispatch: # So I can run this at any time
+  workflow_dispatch:
   push:
     branches:
       - dev
-  # pull_request:
-  #   branch:
-  #     - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -26,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20.11"
       - name: Install Neon CLI
         run: |
           npm install -g neonctl
@@ -48,20 +46,19 @@ jobs:
           GENERATED_KEY=$(openssl rand -base64 32)
           echo "DJANGO_SECRET_KEY=$GENERATED_KEY" >> $GITHUB_ENV
       - name: Install Requirements
-      run: |
-        python -m pip install pip --upgrade
-        python -m pip install -r requirements.txt
+        run: |
+          python -m pip install pip --upgrade
+          python -m pip install -r requirements.txt
       
       - name: Make Django DB Migrations
         working-directory: ./src
         run: |
           python manage.py migrate
       - name: Django Test Requirements
-      working-directory: ./src
-      run: |
+        working-directory: ./src
+        run: |
         python manage.py test
       - name: Clean Up Test branch version
         continue-on-error: true
         run: |
           neonctl branches delete "${{ env.NEON_GITHUB_BRANCH }}" --project-id "${{ env.NEON_PROEJCT_ID }}"
-
