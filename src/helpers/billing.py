@@ -8,7 +8,11 @@ DJANGO_DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="", cast=str)
 STRIPE_TEST_KEY_OVERRIDE = config("STRIPE_TEST_KEY_OVERRIDE", default=False, cast=bool)
 
-if ("sk_test" in STRIPE_SECRET_KEY) and (not DJANGO_DEBUG) and (not STRIPE_TEST_KEY_OVERRIDE):
+if (
+    ("sk_test" in STRIPE_SECRET_KEY)
+    and (not DJANGO_DEBUG)
+    and (not STRIPE_TEST_KEY_OVERRIDE)
+):
     raise ValueError("Invalid Stripe Key for Production Setting")
 stripe.api_key = STRIPE_SECRET_KEY
 
