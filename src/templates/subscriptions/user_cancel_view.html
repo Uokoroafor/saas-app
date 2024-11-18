@@ -1,6 +1,5 @@
 {%extends 'base.html' %} {% block head_title %} Cancel Your Subscription?
-{{block.super}} {% endblock head_title %} {% block content%} {% if
-subscription.is_active %}
+{{block.super}} {% endblock head_title %} {% block content%} {% if subscription.is_active %}
 <h1 class="text-lg font-medium">
   Are you sure you want to cancel your {{ subscription.plan_name }} ?
 </h1>
