@@ -1,10 +1,13 @@
 from django.shortcuts import render
 import helpers.number_utils
 from visits.models import PageVisit
+from dashboard.views import dashboard_view
 
 # Create your views here.
 
-def landing_page_view(request):
+def landing_dashboard_page_view(request):
+    if request.user.is_authenticated:
+        return dashboard_view(request)
     qs = PageVisit.objects.all()  # Get everything
     page_qs = PageVisit.objects.filter(path=request.path)
     PageVisit.objects.create(path=request.path)

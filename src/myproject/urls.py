@@ -30,7 +30,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path("", landing_views.landing_page_view, name="home"),  # Root page
+    path("", landing_views.landing_dashboard_page_view, name="home"),  # Root page
     path("hello-world/", home_page_view),
     path("login/", auth_views.login_view),
     path("register/", auth_views.register_view),
