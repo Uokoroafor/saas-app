@@ -1,4 +1,4 @@
-{%extends 'base.html' %} {% block head_title %} Your Subscription
+{%extends 'dashboard/base.html' %} {% block head_title %} Your Subscription
 {{block.super}} {% endblock head_title %} {% block content%}
 <form action="" method="POST">
   {% csrf_token %}

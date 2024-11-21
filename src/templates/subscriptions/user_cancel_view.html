@@ -1,4 +1,4 @@
-{%extends 'base.html' %} {% block head_title %} Cancel Your Subscription?
+{%extends 'dashboard/base.html' %} {% block head_title %} Cancel Your Subscription?
 {{block.super}} {% endblock head_title %} {% block content%} {% if subscription.is_active %}
 <h1 class="text-lg font-medium">
   Are you sure you want to cancel your {{ subscription.plan_name }} ?
@@ -25,4 +25,4 @@
 <p>End Date: {{subscription.current_period_end}} ({{subscription.current_period_end | timeuntil}})</p>
 
 <p> Member for {{subscription.original_period_start | timesince}} (since {{subscription.original_period_start}} )</p> -->
-{%endblock content %}
+{% endblock content %}
