@@ -5,6 +5,7 @@ from dashboard.views import dashboard_view
 
 # Create your views here.
 
+
 def landing_dashboard_page_view(request):
     if request.user.is_authenticated:
         return dashboard_view(request)
@@ -14,4 +15,8 @@ def landing_dashboard_page_view(request):
     formatted_page_views = helpers.number_utils.format_number(page_qs.count())
     formatted_total_views = helpers.number_utils.format_number(qs.count())
 
-    return render(request, 'landing/main.html',{'page_views':formatted_page_views, 'total_views':formatted_total_views})
+    return render(
+        request,
+        "landing/main.html",
+        {"page_views": formatted_page_views, "total_views": formatted_total_views},
+    )
