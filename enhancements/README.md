@@ -36,8 +36,8 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 4. **Linting and Code Style**
 - [ ] Add type hints to all functions and methods
 - [ ] Write detailed docstrings following a consistent style guide
-- [ ] Set up `mypy`, `ruff` and `black` for linting and type-checking
-- [ ] Automate linting and type-checking using pre-commit hooks
+- [X] Set up `mypy`, `ruff` and `black` for linting and type-checking
+- [X] Automate linting and type-checking using pre-commit hooks
 
 ### 5. **Code Refactoring**
 - [ ] Identify and reduce duplication across the codebase
@@ -52,13 +52,10 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 
 ### 7. **Front-End Redesign**
 - [ ] Redesign the front-end for improved usability and responsiveness
-- [ ] Consider modernising the stack with frameworks like React, Vue, or Alpine.js
-- [ ] Explore Tailwind CSS for streamlined styling
-- [ ] Implement front-end testing with Selenium or Playwright
 
 ---
 
-
+<!-- 
 ## Contributing
 
 Contributions are welcome! If you'd like to suggest improvements or report issues, feel free to open a pull request or issue.
@@ -67,4 +64,4 @@ Contributions are welcome! If you'd like to suggest improvements or report issue
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+This project is licensed under the MIT License. See the `LICENSE` file for more details. -->
