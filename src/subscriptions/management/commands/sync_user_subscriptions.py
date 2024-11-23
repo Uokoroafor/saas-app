@@ -65,11 +65,11 @@ class Command(BaseCommand):
         to_days = options.get("to_days")
 
         if clear_dangling:
-            print("Clearing Active Subs not in use...")
+            # print("Clearing Active Subs not in use...")
             subs_utils.clear_dangling_subscriptions()
-            print("Done!")
+            # print("Done!")
         else:
-            print("Syncing Active Subs")
+            # print("Syncing Active Subs")
             done = subs_utils.refresh_active_users_subscriptions(
                 verbose=verbose,
                 active_only=all_users,

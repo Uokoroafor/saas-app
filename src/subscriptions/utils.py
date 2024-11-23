@@ -15,16 +15,7 @@ def refresh_active_users_subscriptions(
     from_days=0,
     to_days=0,
 ):
-    # active_qs_lookup = (
-    #     Q(status = SubscriptionStatus.ACTIVE) |
-    #     Q(status=SubscriptionStatus.TRIALING)
-    # )
-    # qs=UserSubscription.objects.filter(active_qs_lookup)
-    # user_ids_ = convert_user_ids_to_list(user_ids)
-    # if user_ids_:
-    #     qs = qs.filter(user_id__in=user_ids_)
-
-    # qs=UserSubscription.objects.filter(active_qs_lookup)
+    
     qs = (
         UserSubscription.objects.all()
         if not active_only

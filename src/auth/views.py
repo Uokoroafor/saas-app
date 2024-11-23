@@ -25,14 +25,14 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                print("Login Here Please!")
+                # print("Login Here Please!")
                 return redirect("/")
     return render(request, "auth/login.html", {})
 
 
 def register_view(request):
     if request.method == "POST":
-        print(request.POST)
+        # print(request.POST)
         username = request.POST["username"] or None
         email = request.POST["email"] or None
         password = request.POST["password"] or None
