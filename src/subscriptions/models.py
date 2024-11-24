@@ -243,7 +243,6 @@ class UserSubscriptionManager(models.Manager):
 
 
 class UserSubscription(models.Model):
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     subscription = models.ForeignKey(
         Subscription, on_delete=models.SET_NULL, null=True, blank=True

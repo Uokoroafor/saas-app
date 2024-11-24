@@ -2,8 +2,7 @@ from typing import List, Optional
 import helpers.billing
 
 from customers.models import Customer
-from subscriptions.models import UserSubscription, Subscription, SubscriptionStatus
-from django.db.models import Q
+from subscriptions.models import UserSubscription, Subscription
 
 
 def refresh_active_users_subscriptions(
@@ -15,7 +14,6 @@ def refresh_active_users_subscriptions(
     from_days=0,
     to_days=0,
 ):
-    
     qs = (
         UserSubscription.objects.all()
         if not active_only

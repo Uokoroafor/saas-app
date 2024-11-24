@@ -5,7 +5,6 @@ import subscriptions.utils as subs_utils
 
 
 class Command(BaseCommand):
-
     def add_arguments(self, parser):
         parser.add_argument(
             "--clear-dangling",
