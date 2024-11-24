@@ -78,7 +78,6 @@ def serialise_subscription_data(sub_response):
 def start_checkout_session(
     customer_id, success_url="", cancel_url="", price_stripe_id="", raw=False
 ):
-
     if not success_url.endswith("?session_id={CHECKOUT_SESSION_ID}"):
         success_url = f"{success_url}" + "?session_id={CHECKOUT_SESSION_ID}"
 

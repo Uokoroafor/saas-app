@@ -10,7 +10,6 @@ def format_number(num: int | float, add_sign: bool = True) -> str:
 
     """
     try:
-
         if num < 1_000:
             return str(num)
         num = float(num)

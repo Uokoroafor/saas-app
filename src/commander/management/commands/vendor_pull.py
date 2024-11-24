@@ -14,7 +14,6 @@ VENDOR_STATICFILES = {
 
 
 class Command(BaseCommand):
-
     def handle(self, *args: Any, **options: Any) -> str | None:
         self.stdout.write("Downloading vendor static files")
         completed_urls = []
