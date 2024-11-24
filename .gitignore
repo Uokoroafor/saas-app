@@ -4,6 +4,9 @@ src/staticfiles/vendors
 # Ignore local static file root
 local_cdn/
 
+# Ignore node-modules
+node_modules/
+
 .DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
