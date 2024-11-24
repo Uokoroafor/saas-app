@@ -16,22 +16,22 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ## To-Do List
 
 ### 1. **Workflow Changes**
-- [ ] Refactor GitHub Actions YAML files for efficiency
-- [ ] Add reusable workflows for CI/CD
+- [X] Refactor GitHub Actions YAML files for efficiency
+- [X] Add reusable workflows for CI/CD
 <!-- - [ ] Integrate notifications for build/test statuses (e.g., Slack or email) -->
 
 ### 2. **Testing**
-- [ ] Build a comprehensive testing suite using `pytest` 
+- [ ] Build a testing suite using `pytest` 
   - [ ] Unit tests for critical functions
   - [ ] Integration tests for end-to-end workflows
 - [ ] Measure test coverage with `coverage.py`
 - [ ] Add automated testing to CI/CD pipeline
 
 ### 3. **Dockerisation**
-- [ ] Create a `Dockerfile` for the application
-- [ ] Set up `docker-compose.yml` for full-stack containerization (e.g., Django + PostgreSQL)
-- [ ] Optimize Docker image size using multi-stage builds
-- [ ] Document setup instructions for running the Dockerized version locally
+- [X] Create a `Dockerfile` for the application
+- [ ] Set up `docker-compose.yml` for full-stack containerisation (e.g., Django + PostgreSQL)
+- [ ] Optimise Docker image size using multi-stage builds
+- [ ] Document setup instructions for running the Dockerised version locally
 
 ### 4. **Linting and Code Style**
 - [ ] Add type hints to all functions and methods
@@ -42,7 +42,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 5. **Code Refactoring**
 - [ ] Identify and reduce duplication across the codebase
 - [ ] Break down large views or methods into smaller components
-- [ ] Optimize database queries with Django ORM tools
+- [ ] Optimise database queries with Django ORM tools
 - [ ] Extract business logic into service classes or utilities
 
 ### 6. **Dependency Management**
