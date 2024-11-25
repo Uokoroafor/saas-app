@@ -53,6 +53,10 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 7. **Front-End Redesign**
 - [ ] Redesign the front-end for improved usability and responsiveness
 
+### 8. **Implement Back-End Logger**
+- [ ] Remove instances of the print function
+- [ ] Implement a Logger
+
 ---
 
 <!-- 
