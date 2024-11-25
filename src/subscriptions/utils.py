@@ -67,7 +67,9 @@ def clear_dangling_subscriptions():
         user = customer_obj.user
 
         customer_stripe_id = customer_obj.stripe_id
-        print(f"Sync {user}'s ({customer_stripe_id}) subscriptions and remove old ones")
+        print(
+            f"Sync {user}'s ({customer_stripe_id}) subscriptions and remove old ones"
+        )
         subscriptions = helpers.billing.get_customer_active_subscriptions(
             customer_stripe_id
         )
@@ -83,6 +85,8 @@ def clear_dangling_subscriptions():
                     cancel_at_period_end=True,
                 )
 
+    return
+
 
 def sync_subscription_group_permissions():
     # So subscription model handles permissions
@@ -91,3 +95,4 @@ def sync_subscription_group_permissions():
         subscription_permissions = obj.permissions.all()
         for group in obj.groups.all():
             group.permissions.set(subscription_permissions)
+    return

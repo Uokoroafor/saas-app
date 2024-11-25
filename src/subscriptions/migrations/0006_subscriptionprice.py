@@ -22,7 +22,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("stripe_id", models.CharField(blank=True, max_length=120, null=True)),
+                (
+                    "stripe_id",
+                    models.CharField(blank=True, max_length=120, null=True),
+                ),
                 (
                     "interval",
                     models.CharField(
@@ -33,7 +36,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "price",
-                    models.DecimalField(decimal_places=2, default=9.99, max_digits=10),
+                    models.DecimalField(
+                        decimal_places=2, default=9.99, max_digits=10
+                    ),
                 ),
                 (
                     "Subscription",

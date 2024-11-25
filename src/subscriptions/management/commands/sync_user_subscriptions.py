@@ -52,7 +52,7 @@ class Command(BaseCommand):
         )
         return super().add_arguments(parser)
 
-    def handle(self, *args: Any, **options: Any) -> str | None:
+    def handle(self, *args: Any, **options: Any) -> None:
         clear_dangling = options.get("clear_dangling")
         verbose = options.get("verbose")
         all_users = not options.get(
@@ -79,3 +79,4 @@ class Command(BaseCommand):
             )  # active_only = True
             if done:
                 print("Done!")
+        return

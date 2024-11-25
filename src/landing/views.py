@@ -18,5 +18,8 @@ def landing_dashboard_page_view(request):
     return render(
         request,
         "landing/main.html",
-        {"page_views": formatted_page_views, "total_views": formatted_total_views},
+        {
+            "page_views": formatted_page_views,
+            "total_views": formatted_total_views,
+        },
     )

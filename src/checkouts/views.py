@@ -5,8 +5,13 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
-from subscriptions.models import SubscriptionPrice, Subscription, UserSubscription
+from subscriptions.models import (
+    SubscriptionPrice,
+    Subscription,
+    UserSubscription,
+)
 import helpers.billing
+import warnings
 
 BASE_URL = settings.BASE_URL
 User = get_user_model()
@@ -27,7 +32,9 @@ def checkout_redirect_view(request):
     try:
         obj = SubscriptionPrice.objects.get(id=checkout_subscription_price_id)
     except Exception as e:
-        print(str(e))
+        warnings.warn(
+            f"Error fetching Subscription's Price: {e}", RuntimeWarning
+        )
         obj = None
     if checkout_subscription_price_id is None or obj is None:
         return redirect("pricing")
@@ -66,7 +73,10 @@ def checkout_finalise_view(request):
         sub_obj = Subscription.objects.get(
             subscriptionprice__stripe_id=sub_plan_price_stripe_id
         )  # Basically a reverse lookup to get the subscription from the subscription price object
-    except:
+    except Exception as e:
+        warnings.warn(
+            f"Error fetching Subscription Object: {e}", RuntimeWarning
+        )
         sub_obj = None
 
     # Get User
@@ -74,7 +84,8 @@ def checkout_finalise_view(request):
         user_obj = User.objects.get(
             customer__stripe_id=customer_id
         )  # Basically a reverse lookup to get the subscription from the subscription price object
-    except:
+    except Exception as e:
+        warnings.warn(f"Error fetching User Object: {e}", RuntimeWarning)
         user_obj = None
     context = {}
 
@@ -92,7 +103,10 @@ def checkout_finalise_view(request):
         _user_sub_obj = UserSubscription.objects.create(
             user=user_obj, **updated_sub_options
         )
-    except:
+    except Exception as e:
+        warnings.warn(
+            f"Error fetching User's subscription: {e}", RuntimeWarning
+        )
         _user_sub_obj = None
 
     print(
@@ -118,8 +132,10 @@ def checkout_finalise_view(request):
                     old_stripe_id,
                     reason="Created new membership. Auto cancelling old membership",
                 )
-            except:
-                pass
+            except Exception as e:
+                warnings.warn(
+                    f"Error fetching User Object: {e}", RuntimeWarning
+                )
 
         # This replaces the subscription in the database
         for key, value in updated_sub_options.items():

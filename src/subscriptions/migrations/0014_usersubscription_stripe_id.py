@@ -5,7 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("subscriptions", "0013_subscription_subtitle_alter_subscription_features"),
+        (
+            "subscriptions",
+            "0013_subscription_subtitle_alter_subscription_features",
+        ),
     ]
 
     operations = [

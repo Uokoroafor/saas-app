@@ -6,5 +6,6 @@ import utils as sub_utils
 
 
 class Command(BaseCommand):
-    def handle(self, *args: Any, **options: Any) -> str | None:
+    def handle(self, *args: Any, **options: Any) -> None:
         sub_utils.sync_subscription_group_permissions()
+        return

@@ -79,6 +79,8 @@ def register_view(request: HttpRequest) -> HttpResponse:
                 )
 
             except Exception as e:
-                warnings.warn(f"Error registering user {username}: {e}", RuntimeWarning)
+                warnings.warn(
+                    f"Error registering user {username}: {e}", RuntimeWarning
+                )
     # Render the registration form for after failed POST attempts or other requests
     return render(request, "auth/register.html", {})

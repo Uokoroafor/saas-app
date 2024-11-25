@@ -38,8 +38,10 @@ def subscription_price_view(request, interval="month"):
 def user_subscription_view(
     request,
 ):
-    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
-    sub_data = user_sub_obj.serialise()
+    user_sub_obj, created = UserSubscription.objects.get_or_create(
+        user=request.user
+    )
+    _ = user_sub_obj.serialise()
     if request.method == "POST":
         finished = subs_utils.refresh_active_users_subscriptions(
             user_ids=request.user.id, active_only=False
@@ -49,12 +51,15 @@ def user_subscription_view(
             messages.success(request, "Your plan details have been refreshed!")
         else:
             messages.error(
-                request, "Your plan details have not been refreshed. Please contact us."
+                request,
+                "Your plan details have not been refreshed. Please contact us.",
             )
         return redirect(user_sub_obj.get_absolute_url())
 
     return render(
-        request, "subscriptions/user_detail_view.html", {"subscription": user_sub_obj}
+        request,
+        "subscriptions/user_detail_view.html",
+        {"subscription": user_sub_obj},
     )
 
 
@@ -62,7 +67,9 @@ def user_subscription_view(
 def user_subscription_cancel_view(
     request,
 ):
-    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
+    user_sub_obj, created = UserSubscription.objects.get_or_create(
+        user=request.user
+    )
     sub_data = user_sub_obj.serialise()
     if request.method == "POST":
         if user_sub_obj.stripe_id and user_sub_obj.is_active:
@@ -76,9 +83,13 @@ def user_subscription_cancel_view(
             for k, v in sub_data.items():
                 setattr(user_sub_obj, k, v)
             user_sub_obj.save()
-            messages.success(request, "Your plan has been successfully cancelled.")
+            messages.success(
+                request, "Your plan has been successfully cancelled."
+            )
         return redirect(user_sub_obj.get_absolute_url())
 
     return render(
-        request, "subscriptions/user_cancel_view.html", {"subscription": user_sub_obj}
+        request,
+        "subscriptions/user_cancel_view.html",
+        {"subscription": user_sub_obj},
     )

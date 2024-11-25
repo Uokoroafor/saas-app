@@ -12,7 +12,9 @@ LOGIN_URL = settings.LOGIN_URL
 this_dir = pathlib.Path(__file__).resolve().parent
 
 
-def old_home_page_view(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+def old_home_page_view(
+    request: HttpRequest, *args: Any, **kwargs: Any
+) -> HttpResponse:
     """
     Renders and returns the content of the home.html file as an HTTP response.
 
@@ -31,7 +33,9 @@ def old_home_page_view(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpR
     return HttpResponse(html_text)
 
 
-def home_page_view(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+def home_page_view(
+    request: HttpRequest, *args: Any, **kwargs: Any
+) -> HttpResponse:
     """
     Handles the request for the home page.
 
@@ -51,7 +55,9 @@ def home_page_view(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpRespo
     return about_view(request, *args, **kwargs)
 
 
-def about_view(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+def about_view(
+    request: HttpRequest, *args: Any, **kwargs: Any
+) -> HttpResponse:
     """
     Handles requests for the "About" page, calculates and tracks page visit statistics,
     and renders the corresponding HTML template with the context.
@@ -79,7 +85,9 @@ def about_view(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
     }
     html_template = "home.html"
     PageVisit.objects.create(path=request.path)
-    return render(request=request, template_name=html_template, context=my_context)
+    return render(
+        request=request, template_name=html_template, context=my_context
+    )
 
 
 VALID_CODE = "abc123"
@@ -109,13 +117,19 @@ def pw_protected_view(request, *args, **kwargs):
             is_allowed = 1
 
     if is_allowed:
-        return render(request=request, template_name="protected/view.html", context={})
+        return render(
+            request=request, template_name="protected/view.html", context={}
+        )
 
-    return render(request=request, template_name="protected/entry.html", context={})
+    return render(
+        request=request, template_name="protected/entry.html", context={}
+    )
 
 
 @login_required
-def user_only_view(request: HttpRequest, *arg: Any, **kwargs: Any) -> HttpResponse:
+def user_only_view(
+    request: HttpRequest, *arg: Any, **kwargs: Any
+) -> HttpResponse:
     """
     View accessible only to logged-in users.
 
@@ -130,11 +144,15 @@ def user_only_view(request: HttpRequest, *arg: Any, **kwargs: Any) -> HttpRespon
     Returns:
         HttpResponse: Rendered response for the user-only page.
     """
-    return render(request=request, template_name="protected/user-only.html", context={})
+    return render(
+        request=request, template_name="protected/user-only.html", context={}
+    )
 
 
 @staff_member_required(login_url=LOGIN_URL)
-def staff_only_view(request: HttpRequest, *arg: Any, **kwargs: Any) -> HttpResponse:
+def staff_only_view(
+    request: HttpRequest, *arg: Any, **kwargs: Any
+) -> HttpResponse:
     """
     View accessible only to staff members.
 
@@ -149,4 +167,6 @@ def staff_only_view(request: HttpRequest, *arg: Any, **kwargs: Any) -> HttpRespo
     Returns:
         HttpResponse: Rendered response for the staff-only page.
     """
-    return render(request=request, template_name="protected/user-only.html", context={})
+    return render(
+        request=request, template_name="protected/user-only.html", context={}
+    )

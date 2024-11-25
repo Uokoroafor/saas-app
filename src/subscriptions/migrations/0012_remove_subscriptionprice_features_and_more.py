@@ -17,7 +17,9 @@ class Migration(migrations.Migration):
             model_name="subscription",
             name="features",
             field=models.TextField(
-                blank=True, help_text="Specify the features of each plan", null=True
+                blank=True,
+                help_text="Specify the features of each plan",
+                null=True,
             ),
         ),
     ]

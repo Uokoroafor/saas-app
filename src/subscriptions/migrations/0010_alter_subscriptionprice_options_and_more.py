@@ -13,7 +13,12 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name="subscriptionprice",
             options={
-                "ordering": ["Subscription__order", "order", "featured", "-updated"]
+                "ordering": [
+                    "Subscription__order",
+                    "order",
+                    "featured",
+                    "-updated",
+                ]
             },
         ),
         migrations.AddField(

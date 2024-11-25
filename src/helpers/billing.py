@@ -6,7 +6,9 @@ from . import date_utils
 
 DJANGO_DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="", cast=str)
-STRIPE_TEST_KEY_OVERRIDE = config("STRIPE_TEST_KEY_OVERRIDE", default=False, cast=bool)
+STRIPE_TEST_KEY_OVERRIDE = config(
+    "STRIPE_TEST_KEY_OVERRIDE", default=False, cast=bool
+)
 
 if (
     ("sk_test" in STRIPE_SECRET_KEY)
@@ -18,7 +20,9 @@ stripe.api_key = STRIPE_SECRET_KEY
 
 
 def create_customer(name="", email="", raw=False, metadata={}):
-    response = stripe.Customer.create(name=name, email=email, metadata=metadata)
+    response = stripe.Customer.create(
+        name=name, email=email, metadata=metadata
+    )
     if raw:
         return response
     else:
@@ -109,7 +113,9 @@ def get_subscription(stripe_id, raw=False):
 
 
 def get_customer_active_subscriptions(customer_stripe_id):
-    response = stripe.Subscription.list(customer=customer_stripe_id, status="active")
+    response = stripe.Subscription.list(
+        customer=customer_stripe_id, status="active"
+    )
 
     return response
 
@@ -130,7 +136,8 @@ def cancel_subscription(
 
     else:
         response = stripe.Subscription.cancel(
-            stripe_id, cancellation_details={"comment": reason, "feedback": feedback}
+            stripe_id,
+            cancellation_details={"comment": reason, "feedback": feedback},
         )
     if raw:
         return response

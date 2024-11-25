@@ -5,7 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("subscriptions", "0018_usersubscription_cancel_at_period_end_and_more"),
+        (
+            "subscriptions",
+            "0018_usersubscription_cancel_at_period_end_and_more",
+        ),
     ]
 
     operations = [

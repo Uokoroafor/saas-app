@@ -1,9 +1,13 @@
 from django.contrib import admin
-from .models import Subscription, UserSubscription, SubscriptionPrice
+from .models import (
+    Subscription,
+    UserSubscription,
+    SubscriptionPrice as SubscriptionPrice_,
+)
 
 
 class SubscriptionPrice(admin.TabularInline):
-    model = SubscriptionPrice
+    model = SubscriptionPrice_
     readonly_fields = ["stripe_id"]
     can_delete = False
     extra = 0

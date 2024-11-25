@@ -35,7 +35,9 @@ class Subscription(models.Model):
         },
     )
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
-    order = models.IntegerField(default=-1, help_text="Order on Django Pricing Page")
+    order = models.IntegerField(
+        default=-1, help_text="Order on Django Pricing Page"
+    )
     featured = models.BooleanField(
         default=True, help_text="Featured on Django Pricing page"
     )
@@ -82,13 +84,19 @@ class SubscriptionPrice(models.Model):
         MONTHLY = "month", "Monthly"
         YEARLY = "year", "Annually"
 
-    Subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
+    Subscription = models.ForeignKey(
+        Subscription, on_delete=models.SET_NULL, null=True
+    )
     stripe_id = models.CharField(max_length=120, null=True, blank=True)
     interval = models.CharField(
-        max_length=120, default=IntervalChoices.MONTHLY, choices=IntervalChoices.choices
+        max_length=120,
+        default=IntervalChoices.MONTHLY,
+        choices=IntervalChoices.choices,
     )
     price = models.DecimalField(max_digits=10, decimal_places=2, default=9.99)
-    order = models.IntegerField(default=-1, help_text="Order on Django Pricing Page")
+    order = models.IntegerField(
+        default=-1, help_text="Order on Django Pricing Page"
+    )
     featured = models.BooleanField(
         default=True, help_text="Featured on Django Pricing page"
     )
@@ -197,24 +205,30 @@ class UserSubscriptionQuerySet(models.QuerySet):
     def by_days_remaining(self, days_remaining=7):
         now = timezone.now()
         in_n_days = now + datetime.timedelta(days=days_remaining)
-        start_of_day = in_n_days.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_of_day = in_n_days.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
         end_of_day = in_n_days.replace(
             hour=23, minute=59, second=59, microsecond=999_999
         )
         qs = self.filter(
-            current_period_end__gte=start_of_day, current_period_end__lte=end_of_day
+            current_period_end__gte=start_of_day,
+            current_period_end__lte=end_of_day,
         )
         return qs
 
     def by_days_since(self, days_since=7):
         now = timezone.now()
         for_n_days = now - datetime.timedelta(days=days_since)
-        start_of_day = for_n_days.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_of_day = for_n_days.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
         end_of_day = for_n_days.replace(
             hour=23, minute=59, second=59, microsecond=999_999
         )
         qs = self.filter(
-            current_period_end__gte=start_of_day, current_period_end__lte=end_of_day
+            current_period_end__gte=start_of_day,
+            current_period_end__lte=end_of_day,
         )
         return qs
 
@@ -229,7 +243,8 @@ class UserSubscriptionQuerySet(models.QuerySet):
             hour=23, minute=59, second=59, microsecond=999_999
         )
         qs = self.filter(
-            current_period_end__gte=start_date, current_period_end__lte=end_date
+            current_period_end__gte=start_date,
+            current_period_end__lte=end_date,
         )
         return qs
 
@@ -260,7 +275,10 @@ class UserSubscription(models.Model):
         auto_now=False, auto_now_add=False, blank=True, null=True
     )
     status = models.CharField(
-        max_length=20, null=True, blank=True, choices=SubscriptionStatus.choices
+        max_length=20,
+        null=True,
+        blank=True,
+        choices=SubscriptionStatus.choices,
     )
     cancel_at_period_end = models.BooleanField(default=False)
 
@@ -290,7 +308,10 @@ class UserSubscription(models.Model):
 
     @property
     def is_active(self):
-        return self.status in [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING]
+        return self.status in [
+            SubscriptionStatus.ACTIVE,
+            SubscriptionStatus.TRIALING,
+        ]
 
     def serialise(self):
         return {
@@ -301,7 +322,10 @@ class UserSubscription(models.Model):
         }
 
     def save(self, *args, **kwargs):
-        if not self.original_period_start and self.current_period_start is not None:
+        if (
+            not self.original_period_start
+            and self.current_period_start is not None
+        ):
             self.original_period_start = self.current_period_start
 
         super().save(*args, **kwargs)
