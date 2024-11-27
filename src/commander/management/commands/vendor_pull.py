@@ -14,7 +14,26 @@ VENDOR_STATICFILES = {
 
 
 class Command(BaseCommand):
+    """Command to download vendor static files and store them locally.
+
+    This management command iterates through the static files defined
+    in `VENDOR_STATICFILES` and downloads each file to the `STATICFILES_VENDOR_DIR`.
+
+    Attributes:
+        stdout (OutputWrapper): Standard output used to write messages to the console.
+        style (Style): Provides styling methods (e.g., SUCCESS, ERROR) for output.
+    """
+
     def handle(self, *args: Any, **options: Any) -> None:
+        """Executes the command to download vendor static files.
+
+        Args:
+            *args (Any): Positional arguments passed to the command.
+            **options (Any): Keyword options passed to the command.
+
+        Returns:
+            None: The function does not return a value.
+        """
         self.stdout.write("Downloading vendor static files")
         completed_urls = []
 
