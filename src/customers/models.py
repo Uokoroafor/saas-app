@@ -105,5 +105,6 @@ class Customer(models.Model):
             obj.init_email_confirmed = True
             obj.save()
         # Could also use qs update here but it won't complete the corresponding stripe step FYI
+        # Note: Using `update()` would not trigger the save logic for Stripe updates.
 
     all_auth_email_confirmed.connect(all_auth_email_confirmed_handler)

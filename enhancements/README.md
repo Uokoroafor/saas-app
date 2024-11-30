@@ -34,8 +34,8 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [ ] Document setup instructions for running the Dockerised version locally
 
 ### 4. **Linting and Code Style**
-- [ ] Add type hints to all functions and methods
-- [ ] Write detailed docstrings following a consistent style guide
+- [X] Add type hints to all functions and methods
+- [X] Write detailed docstrings following a consistent style guide
 - [X] Set up `mypy`, `ruff` and `black` for linting and type-checking
 - [X] Automate linting and type-checking using pre-commit hooks
 
@@ -56,16 +56,3 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 8. **Implement Back-End Logger**
 - [ ] Remove instances of the print function
 - [ ] Implement a Logger
-
----
-
-<!-- 
-## Contributing
-
-Contributions are welcome! If you'd like to suggest improvements or report issues, feel free to open a pull request or issue.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details. -->
