@@ -58,10 +58,19 @@ jobs:
           GENERATED_KEY=$(openssl rand -base64 32)
           echo "DJANGO_SECRET_KEY=$GENERATED_KEY" >> $GITHUB_ENV
       
-      - name: Install Python Requirements
+      # - name: Install Python Requirements
+      #   run: |
+      #     python -m pip install pip --upgrade
+      #     python -m pip install -r requirements.txt
+
+      - name: Install Poetry
         run: |
-          python -m pip install pip --upgrade
-          python -m pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+
+      - name: Install Dependencies with Poetry
+        run: |
+          poetry install --no-interaction --no-ansi
       
       - name: Apply Django DB Migrations
         working-directory: ./src
