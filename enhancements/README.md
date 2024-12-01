@@ -46,9 +46,9 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [ ] Extract business logic into service classes or utilities
 
 ### 6. **Dependency Management**
-- [ ] Transition from `requirements.txt` to Poetry (`pyproject.toml`)
+- [X] Transition from `requirements.txt` to Poetry (`pyproject.toml`)
 - [ ] Document how to use Poetry for dependency management
-- [ ] Set up a fallback `requirements.txt` export for compatibility
+- [X] Set up a fallback `requirements.txt` export for compatibility
 
 ### 7. **Front-End Redesign**
 - [ ] Redesign the front-end for improved usability and responsiveness
