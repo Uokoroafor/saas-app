@@ -42,8 +42,8 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 5. **Code Refactoring**
 - [ ] Identify and reduce duplication across the codebase
 - [ ] Break down large views or methods into smaller components
-- [ ] Optimise database queries with Django ORM tools
-- [ ] Extract business logic into service classes or utilities
+<!-- - [ ] Optimise database queries with Django ORM tools
+- [ ] Extract business logic into service classes or utilities -->
 
 ### 6. **Dependency Management**
 - [X] Transition from `requirements.txt` to Poetry (`pyproject.toml`)
@@ -54,5 +54,5 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [ ] Redesign the front-end for improved usability and responsiveness
 
 ### 8. **Implement Back-End Logger**
-- [ ] Remove instances of the print function
-- [ ] Implement a Logger
+- [X] Remove unnecessary instances of the print function
+- [X] Implement a Logger
