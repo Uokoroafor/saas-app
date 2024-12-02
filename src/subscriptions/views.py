@@ -67,7 +67,8 @@ def user_subscription_view(
     Returns:
         HttpResponse:
             - If the request is GET: Renders the user's subscription detail page.
-            - If the request is POST: Redirects to the subscription detail page after attempting to refresh subscription data.
+            - If the request is POST: Redirects to the subscription detail page after attempting
+                to refresh subscription data.
     """
     # Retrieve or create the UserSubscription object for the logged-in user
     user_sub_obj, created = UserSubscription.objects.get_or_create(

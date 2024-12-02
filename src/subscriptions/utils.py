@@ -4,6 +4,9 @@ import helpers.billing
 from customers.models import Customer
 from subscriptions.models import UserSubscription, Subscription
 import warnings
+import logging
+
+logger = logging.getLogger("myproject")
 
 
 def refresh_active_users_subscriptions(
@@ -56,16 +59,15 @@ def refresh_active_users_subscriptions(
     if from_days < to_days:
         qs = qs.by_days_range(from_days=from_days, to_days=to_days)
     elif from_days >= to_days and not (from_days == 0 and to_days == 0):
-        warnings.warn(
-            f"'from_days' ({from_days}) should be less than 'to_days' ({to_days}). Skipping days filtering.",
-            RuntimeWarning,
-        )
+        msg = f"'from_days' ({from_days}) should be less than 'to_days' ({to_days}). Skipping days filtering."
+        warnings.warn(msg, RuntimeWarning)
+        logging.warning(msg)
     qs_count, complete = qs.count(), 0
     for obj in qs:
+        msg = f"Refreshing {obj.user} - Subscription [{obj.subscription}] - End Date [{obj.current_period_end}]"
+        logging.info(msg)
         if verbose:
-            print(
-                f"Refreshing {obj.user} - Subscription [{obj.subscription}] - End Date [{obj.current_period_end}]"
-            )
+            print(msg)
         if obj.stripe_id:
             sub_data = helpers.billing.get_subscription(obj.stripe_id)
             for k, v in sub_data.items():
@@ -112,7 +114,7 @@ def clear_dangling_subscriptions() -> None:
         user = customer_obj.user
 
         customer_stripe_id = customer_obj.stripe_id
-        print(
+        logger.info(
             f"Sync {user}'s ({customer_stripe_id}) subscriptions and remove old ones"
         )
         # Retrieve active subscriptions from Stripe
@@ -125,8 +127,7 @@ def clear_dangling_subscriptions() -> None:
             )
             # Check if the subscription exists in database
             if not existing_user_subs_qs.exists():
-                print(f"Subscription {sub.id} is dangling: Canceling.")
-                # print(sub.id, existing_user_subs_qs.exists())
+                logging.info(f"Subscription {sub.id} is dangling: Canceling.")
                 helpers.billing.cancel_subscription(
                     stripe_id=sub.id,
                     reason="Dangling Active Subscription",

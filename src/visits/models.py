@@ -10,7 +10,8 @@ class PageVisit(models.Model):
 
     Attributes:
         path (str): The URL or path of the page that was visited. This field can be blank or null.
-        timestamp (datetime): The timestamp when the page visit occurred. This field is automatically set when the record is created.
+        timestamp (datetime): The timestamp when the page visit occurred.
+            This field is automatically set when the record is created.
     """
 
     path = models.TextField(
