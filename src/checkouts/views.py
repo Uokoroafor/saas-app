@@ -19,6 +19,9 @@ from subscriptions.models import (
 )
 import helpers.billing
 import warnings
+import logging
+
+logger = logging.getLogger("myproject")
 
 BASE_URL = settings.BASE_URL
 User = get_user_model()
@@ -73,9 +76,9 @@ def checkout_redirect_view(
     try:
         obj = SubscriptionPrice.objects.get(id=checkout_subscription_price_id)
     except Exception as e:
-        warnings.warn(
-            f"Error fetching Subscription's Price: {e}", RuntimeWarning
-        )
+        msg = f"Error fetching Subscription's Price: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         obj = None
     if checkout_subscription_price_id is None or obj is None:
         return redirect("pricing")
@@ -126,9 +129,9 @@ def checkout_finalise_view(
             subscriptionprice__stripe_id=sub_plan_price_stripe_id
         )  # Basically a reverse lookup to get the subscription from the subscription price object
     except Exception as e:
-        warnings.warn(
-            f"Error fetching Subscription Object: {e}", RuntimeWarning
-        )
+        msg = f"Error fetching Subscription Object: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         sub_obj = None
 
     # Retrieve or create the UserSubscription object
@@ -137,7 +140,9 @@ def checkout_finalise_view(
             customer__stripe_id=customer_id
         )  # Basically a reverse lookup to get the subscription from the subscription price object
     except Exception as e:
-        warnings.warn(f"Error fetching User Object: {e}", RuntimeWarning)
+        msg = f"Error fetching User Object: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         user_obj = None
     context: Dict[str, str] = {}
 
@@ -156,12 +161,12 @@ def checkout_finalise_view(
             user=user_obj, **updated_sub_options
         )
     except Exception as e:
-        warnings.warn(
-            f"Error fetching User's subscription: {e}", RuntimeWarning
-        )
+        msg = f"Error fetching User's subscription: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         _user_sub_obj = None
 
-    print(
+    logger.info(
         "Subscription",
         sub_obj,
         "\nUser",
@@ -171,6 +176,9 @@ def checkout_finalise_view(
     )
     # Error handling for missing objects
     if None in [sub_obj, user_obj, _user_sub_obj]:
+        logger.error(
+            f"There was an error: \nsub_obj_error:{sub_obj is None},\nuser_obj_error:{user_obj is None},\n_user_sub_obj_error:{_user_sub_obj is None}"
+        )
         return HttpResponseBadRequest(
             "There was an error with your requested purchase. Please contact us!"
         )
@@ -186,9 +194,9 @@ def checkout_finalise_view(
                     reason="Created new membership. Auto cancelling old membership",
                 )
             except Exception as e:
-                warnings.warn(
-                    f"Error fetching User Object: {e}", RuntimeWarning
-                )
+                msg = f"Error fetching User Object: {e}"
+                warnings.warn(msg, RuntimeWarning)
+                logger.warning(msg)
 
         # Update the UserSubscription object in the database
         for key, value in updated_sub_options.items():

@@ -2,6 +2,9 @@ from typing import Any
 from django.core.management.base import BaseCommand
 import helpers
 from django.conf import settings
+import logging
+
+logger = logging.getLogger("myproject")
 
 STATICFILES_VENDOR_DIR = getattr(settings, "STATICFILES_VENDOR_DIR")
 
@@ -46,6 +49,7 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.ERROR(f"Failed to download {url}")
                 )
+                logger.error(f"Failed to download {url}")
 
         if set(completed_urls) == set(VENDOR_STATICFILES.values()):
             self.stdout.write(
@@ -53,6 +57,7 @@ class Command(BaseCommand):
                     "Successfully updated all vendor static files."
                 )
             )
+            logger.info("Successfully updated all vendor static files.")
         else:
             self.stdout.write(
                 self.style.WARNING("Failed to download at least one file")

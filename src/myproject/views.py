@@ -6,6 +6,9 @@ from django.conf import settings
 from visits.models import PageVisit
 import pathlib
 from typing import Any
+import logging
+
+logger = logging.getLogger("my project")
 
 LOGIN_URL = settings.LOGIN_URL
 
@@ -39,8 +42,8 @@ def home_page_view(
     """
     Handles the request for the home page.
 
-    If the user is authenticated, their first name is printed
-    to the console. Delegates rendering to the `about_view` function.
+    If the user is authenticated, their first name is logged.
+    Delegates rendering to the `about_view` function.
 
     Args:
         request (HttpRequest): The HTTP request object.
@@ -51,7 +54,7 @@ def home_page_view(
         HttpResponse: The response returned by the `about_view` function.
     """
     if request.user.is_authenticated:
-        print(request.user.first_name)
+        logger.info(f"User {request.user.first_name} is already authenticated")
     return about_view(request, *args, **kwargs)
 
 

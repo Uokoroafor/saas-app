@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpRequest
 import warnings
+import logging
+
+logger = logging.getLogger("myproject")
 
 # def my_view(request):
 #     username = request.POST["username"]
@@ -79,8 +82,8 @@ def register_view(request: HttpRequest) -> HttpResponse:
                 )
 
             except Exception as e:
-                warnings.warn(
-                    f"Error registering user {username}: {e}", RuntimeWarning
-                )
+                msg = f"Error registering user {username}: {e}"
+                warnings.warn(msg, RuntimeWarning)
+                logger.warning(msg)
     # Render the registration form for after failed POST attempts or other requests
     return render(request, "auth/register.html", {})
