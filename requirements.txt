@@ -5,9 +5,11 @@ psycopg[binary]
 dj-database-url
 python-decouple
 requests
+types-requests
 whitenoise
 django-allauth[socialaccount]
 django-allauth-ui
 django-widget-tweaks
 slippers
 stripe
+pre-commit

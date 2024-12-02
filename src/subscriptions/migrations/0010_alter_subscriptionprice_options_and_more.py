@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("subscriptions", "0009_alter_subscription_options_and_more"),
     ]
@@ -14,7 +13,12 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name="subscriptionprice",
             options={
-                "ordering": ["Subscription__order", "order", "featured", "-updated"]
+                "ordering": [
+                    "Subscription__order",
+                    "order",
+                    "featured",
+                    "-updated",
+                ]
             },
         ),
         migrations.AddField(

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("subscriptions", "0003_rename_permission_subscription_permissions"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

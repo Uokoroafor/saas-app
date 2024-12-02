@@ -2,6 +2,9 @@ from typing import Any
 from django.core.management.base import BaseCommand
 import helpers
 from django.conf import settings
+import logging
+
+logger = logging.getLogger("myproject")
 
 STATICFILES_VENDOR_DIR = getattr(settings, "STATICFILES_VENDOR_DIR")
 
@@ -14,8 +17,26 @@ VENDOR_STATICFILES = {
 
 
 class Command(BaseCommand):
+    """Command to download vendor static files and store them locally.
 
-    def handle(self, *args: Any, **options: Any) -> str | None:
+    This management command iterates through the static files defined
+    in `VENDOR_STATICFILES` and downloads each file to the `STATICFILES_VENDOR_DIR`.
+
+    Attributes:
+        stdout (OutputWrapper): Standard output used to write messages to the console.
+        style (Style): Provides styling methods (e.g., SUCCESS, ERROR) for output.
+    """
+
+    def handle(self, *args: Any, **options: Any) -> None:
+        """Executes the command to download vendor static files.
+
+        Args:
+            *args (Any): Positional arguments passed to the command.
+            **options (Any): Keyword options passed to the command.
+
+        Returns:
+            None: The function does not return a value.
+        """
         self.stdout.write("Downloading vendor static files")
         completed_urls = []
 
@@ -25,13 +46,21 @@ class Command(BaseCommand):
             if dl_success:
                 completed_urls.append(url)
             else:
-                self.stdout.write(self.style.ERROR(f"Failed to download {url}"))
+                self.stdout.write(
+                    self.style.ERROR(f"Failed to download {url}")
+                )
+                logger.error(f"Failed to download {url}")
 
         if set(completed_urls) == set(VENDOR_STATICFILES.values()):
             self.stdout.write(
-                self.style.SUCCESS("Successfully updated all vendor static files.")
+                self.style.SUCCESS(
+                    "Successfully updated all vendor static files."
+                )
             )
+            logger.info("Successfully updated all vendor static files.")
         else:
             self.stdout.write(
                 self.style.WARNING("Failed to download at least one file")
             )
+
+        return

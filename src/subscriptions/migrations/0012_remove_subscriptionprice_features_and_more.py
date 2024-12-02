@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("subscriptions", "0011_subscriptionprice_features"),
     ]
@@ -18,7 +17,9 @@ class Migration(migrations.Migration):
             model_name="subscription",
             name="features",
             field=models.TextField(
-                blank=True, help_text="Specify the features of each plan", null=True
+                blank=True,
+                help_text="Specify the features of each plan",
+                null=True,
             ),
         ),
     ]

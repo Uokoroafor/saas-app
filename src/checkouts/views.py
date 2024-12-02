@@ -1,38 +1,89 @@
+from typing import Any, Dict, Optional, Union
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.http import HttpResponseBadRequest
-from subscriptions.models import SubscriptionPrice, Subscription, UserSubscription
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+)
+from subscriptions.models import (
+    SubscriptionPrice,
+    Subscription,
+    UserSubscription,
+)
 import helpers.billing
+import warnings
+import logging
+
+logger = logging.getLogger("myproject")
 
 BASE_URL = settings.BASE_URL
 User = get_user_model()
 
 
 # Create your views here.
-def product_price_redirect_view(request, price_id=None, *args, **kwargs):
+def product_price_redirect_view(
+    request: HttpRequest,
+    price_id: Optional[str] = None,
+    *args: Any,
+    **kwargs: Any,
+) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """
+    Store the subscription price ID in the session and redirect to the Stripe checkout start page.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing session data.
+        price_id (Optional[str]): The price ID for the subscription, if provided. Defaults to None.
+        *args (Any): Additional positional arguments (not used in this view).
+        **kwargs (Any): Additional keyword arguments (not used in this view).
+
+    Returns:
+        Union[HttpResponseRedirect, HttpResponsePermanentRedirect]: A redirection response
+        to the "stripe-checkout-start" URL.
+    """
     request.session["checkout_subscription_price_id"] = price_id
     return redirect("stripe-checkout-start")
 
 
 @login_required
-def checkout_redirect_view(request):
+def checkout_redirect_view(
+    request: HttpRequest,
+) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """
+    Redirect the user to the Stripe checkout session if a valid subscription price is found in the session.
+
+    Retrieves the subscription price ID from the session, attempts to fetch the corresponding
+    `SubscriptionPrice` object, and starts a Stripe checkout session if valid. Redirects the user
+    to the pricing page if no valid price ID is found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing session and user data.
+
+    Returns:
+        Union[HttpResponseRedirect, HttpResponsePermanentRedirect]: A redirect response to the
+        Stripe checkout session URL or the pricing page.
+    """
     checkout_subscription_price_id = request.session.get(
         "checkout_subscription_price_id"
     )
-    # print("checkout_subscription_price_id",checkout_subscription_price_id)
+
     try:
         obj = SubscriptionPrice.objects.get(id=checkout_subscription_price_id)
     except Exception as e:
-        print(str(e))
+        msg = f"Error fetching Subscription's Price: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         obj = None
     if checkout_subscription_price_id is None or obj is None:
         return redirect("pricing")
     customer_stripe_id = request.user.customer.stripe_id
-    # print(customer_stripe_id)
+
     success_url_end = reverse("stripe-checkout-end")
     pricing_url_path = reverse("pricing")
     success_url = f"{BASE_URL}{success_url_end}"
@@ -48,35 +99,52 @@ def checkout_redirect_view(request):
     return redirect(url)
 
 
-def checkout_finalise_view(request):
+def checkout_finalise_view(
+    request: HttpRequest,
+) -> Union[HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """
+    Finalises the checkout process by associating a subscription with the user and managing
+    subscription data updates.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing session and GET data.
+
+    Returns:
+        Union[HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect]:
+        - A redirect to the user's subscription URL upon successful processing.
+        - An error response if any issues arise during processing.
+    """
     session_id = request.GET.get("session_id")
     checkout_data = helpers.billing.get_checkout_customer_plan(session_id)
 
     customer_id = checkout_data.pop("customer_id")
     sub_plan_price_stripe_id = checkout_data.pop("sub_plan_price_stripe_id")
     sub_stripe_id = checkout_data.pop("sub_stripe_id")
-    # current_period_start = checkout_data.get('current_period_start')
-    # current_period_end = checkout_data.get('current_period_end')
 
     subscription_data = checkout_data
-    # print(checkout_data)
 
-    # Get Subscription
+    # Retrieve the subscription object
     try:
         sub_obj = Subscription.objects.get(
             subscriptionprice__stripe_id=sub_plan_price_stripe_id
         )  # Basically a reverse lookup to get the subscription from the subscription price object
-    except:
+    except Exception as e:
+        msg = f"Error fetching Subscription Object: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         sub_obj = None
 
-    # Get User
+    # Retrieve or create the UserSubscription object
     try:
         user_obj = User.objects.get(
             customer__stripe_id=customer_id
         )  # Basically a reverse lookup to get the subscription from the subscription price object
-    except:
+    except Exception as e:
+        msg = f"Error fetching User Object: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         user_obj = None
-    context = {}
+    context: Dict[str, str] = {}
 
     _user_sub_exists = False
     updated_sub_options = {
@@ -92,10 +160,13 @@ def checkout_finalise_view(request):
         _user_sub_obj = UserSubscription.objects.create(
             user=user_obj, **updated_sub_options
         )
-    except:
+    except Exception as e:
+        msg = f"Error fetching User's subscription: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
         _user_sub_obj = None
 
-    print(
+    logger.info(
         "Subscription",
         sub_obj,
         "\nUser",
@@ -103,13 +174,17 @@ def checkout_finalise_view(request):
         "\nUser Subscription",
         _user_sub_obj,
     )
+    # Error handling for missing objects
     if None in [sub_obj, user_obj, _user_sub_obj]:
+        logger.error(
+            f"There was an error: \nsub_obj_error:{sub_obj is None},\nuser_obj_error:{user_obj is None},\n_user_sub_obj_error:{_user_sub_obj is None}"
+        )
         return HttpResponseBadRequest(
             "There was an error with your requested purchase. Please contact us!"
         )
 
     if _user_sub_exists:
-        # cancel old sub
+        # cancel existing subscription if it exists
         old_stripe_id = _user_sub_obj.stripe_id
         same_stripe_id = sub_stripe_id == old_stripe_id
         if old_stripe_id is not None and not same_stripe_id:
@@ -118,10 +193,12 @@ def checkout_finalise_view(request):
                     old_stripe_id,
                     reason="Created new membership. Auto cancelling old membership",
                 )
-            except:
-                pass
+            except Exception as e:
+                msg = f"Error fetching User Object: {e}"
+                warnings.warn(msg, RuntimeWarning)
+                logger.warning(msg)
 
-        # This replaces the subscription in the database
+        # Update the UserSubscription object in the database
         for key, value in updated_sub_options.items():
             setattr(_user_sub_obj, key, value)
         _user_sub_obj.save()
