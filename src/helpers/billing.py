@@ -5,6 +5,9 @@ from decouple import config
 from . import date_utils
 from typing import Dict, Union, Optional, List
 import datetime
+import logging
+
+logger = logging.getLogger("myproject")
 
 DJANGO_DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="", cast=str)
@@ -17,6 +20,7 @@ if (
     and (not DJANGO_DEBUG)
     and (not STRIPE_TEST_KEY_OVERRIDE)
 ):
+    logger.error("Invalid Stripe Key for Production Setting")
     raise ValueError("Invalid Stripe Key for Production Setting")
 stripe.api_key = STRIPE_SECRET_KEY
 
@@ -59,12 +63,14 @@ def create_product(
 
     Args:
         name (str, optional): The name of the product. Defaults to an empty string.
-        raw (bool, optional): If `True`, returns the full Stripe product object. If `False`, returns only the product ID. Defaults to `False`.
+        raw (bool, optional): If `True`, returns the full Stripe product object. If `False`, returns only
+            the product ID. Defaults to `False`.
         metadata (Dict[str, str], optional): Additional metadata to associate with the product.
             Defaults to an empty dictionary.
 
     Returns:
-        Union[stripe.Product, str]: Returns a `stripe.Product` object if `raw` is `True`,or the product ID (`str`) if `raw` is `False`.
+        Union[stripe.Product, str]: Returns a `stripe.Product` object if `raw` is `True`,or the product ID (`str`)
+            if `raw` is `False`.
     """
     if not metadata:
         metadata = {}
@@ -99,12 +105,14 @@ def create_price(
             Defaults to None.
 
     Returns:
-        Union[str, stripe.Price]: The ID of the created price if `raw` is False, otherwise the full `stripe.Price` object.
+        Union[str, stripe.Price]: The ID of the created price if `raw` is False,
+            otherwise the full `stripe.Price` object.
 
     Raises:
         ValueError: If `product` is not provided.
     """
     if product is None:
+        logger.error("No Product included for created price")
         raise ValueError("No Product included for created price")
     response = stripe.Price.create(
         currency=currency,

@@ -2,6 +2,9 @@ import requests
 from pathlib import Path
 from typing import Optional
 import warnings
+import logging
+
+logger = logging.getLogger("myproject")
 
 
 def download_to_local(
@@ -40,5 +43,7 @@ def download_to_local(
         out_path.write_bytes(response.content)
         return True
     except requests.RequestException as e:
-        warnings.warn(f"Failed to download url {url} \n {e}", RuntimeWarning)
+        msg = f"Failed to download url {url} \n {e}"
+        logger.error(msg)
+        warnings.warn(msg, RuntimeWarning)
         return False

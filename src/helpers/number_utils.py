@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger("myproject")
+
+
 def format_number(num: int | float, add_sign: bool = True) -> str:
     """Format a number a into human-readable format using suffixes like K, M, B, T
 
@@ -30,5 +35,6 @@ def format_number(num: int | float, add_sign: bool = True) -> str:
 
         return str(num)
 
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as e:
+        logger.info(f"Due to error {e}: Returning {num} as string")
         return str(num)
