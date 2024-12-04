@@ -143,14 +143,8 @@ def checkout_finalise_view(
     )
 
     # Log Subscription, User and User Subscription
-    logger.info(
-        "Subscription",
-        sub_obj,
-        "\nUser",
-        user_obj,
-        "\nUser Subscription",
-        _user_sub_obj,
-    )
+    logger.info(f"Subscription:{sub_obj.name} - User:{user_obj.username}")
+
     # Error handling for missing objects
     if None in [sub_obj, user_obj, _user_sub_obj]:
         logger.error(
