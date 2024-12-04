@@ -1,6 +1,7 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 import helpers.billing
 
+from django.db import models
 from customers.models import Customer
 from subscriptions.models import UserSubscription, Subscription
 import warnings
@@ -50,18 +51,23 @@ def refresh_active_users_subscriptions(
     if user_ids is not None:
         qs = qs.by_user_ids(user_ids=user_ids)
 
-    if days_since > 0:
-        qs = qs.by_days_since(days_since)
+    qs = apply_day_filters(qs, days_remaining, days_since, from_days, to_days)
+    qs_count, complete = refresh_subscriptions(qs, verbose)
+    return complete == qs_count
 
-    if days_remaining > 0:
-        qs = qs.by_days_remaining(days_remaining)
 
-    if from_days < to_days:
-        qs = qs.by_days_range(from_days=from_days, to_days=to_days)
-    elif from_days >= to_days and not (from_days == 0 and to_days == 0):
-        msg = f"'from_days' ({from_days}) should be less than 'to_days' ({to_days}). Skipping days filtering."
-        warnings.warn(msg, RuntimeWarning)
-        logging.warning(msg)
+def refresh_subscriptions(qs, verbose) -> Tuple[int, int]:
+    """
+    Refreshes subscriptions by fetching the latest data from Stripe and updating local records.
+
+    Args:
+        qs (QuerySet[UserSubscription]): A Django QuerySet of user subscriptions to refresh.
+        verbose (bool): If True, prints detailed output for each subscription processed.
+
+    Returns:
+        Tuple[int, int]: A tuple containing the total number of subscriptions in the queryset
+        and the number of successfully refreshed subscriptions.
+    """
     qs_count, complete = qs.count(), 0
     for obj in qs:
         msg = f"Refreshing {obj.user} - Subscription [{obj.subscription}] - End Date [{obj.current_period_end}]"
@@ -74,7 +80,38 @@ def refresh_active_users_subscriptions(
                 setattr(obj, k, v)
             obj.save()
             complete += 1
-    return complete == qs_count
+    return qs_count, complete
+
+
+def apply_day_filters(
+    qs, days_remaining, days_since, from_days, to_days
+) -> models.QuerySet:
+    """
+    Applies various day-based filters to a queryset of user subscriptions.
+
+    Args:
+        qs (QuerySet[UserSubscription]): A Django QuerySet of user subscriptions.
+        days_remaining (int): Filters subscriptions with this many days remaining.
+        days_since (int): Filters subscriptions that ended this many days ago.
+        from_days (int): Start of the date range filter (days from now).
+        to_days (int): End of the date range filter (days from now).
+
+    Returns:
+        QuerySet[UserSubscription]: A filtered QuerySet based on the provided day criteria.
+    """
+    if days_since > 0:
+        qs = qs.by_days_since(days_since)
+
+    if days_remaining > 0:
+        qs = qs.by_days_remaining(days_remaining)
+
+    if from_days < to_days:
+        qs = qs.by_days_range(from_days=from_days, to_days=to_days)
+    elif from_days >= to_days and not (from_days == 0 and to_days == 0):
+        msg = f"'from_days' ({from_days}) should be less than 'to_days' ({to_days}). Skipping days filtering."
+        warnings.warn(msg, RuntimeWarning)
+        logging.warning(msg)
+    return qs
 
 
 def convert_user_ids_to_list(
@@ -121,19 +158,34 @@ def clear_dangling_subscriptions() -> None:
         subscriptions = helpers.billing.get_customer_active_subscriptions(
             customer_stripe_id
         )
-        for sub in subscriptions:
-            existing_user_subs_qs = UserSubscription.objects.filter(
-                stripe_id__iexact=f"{sub.id}".strip()
-            )
-            # Check if the subscription exists in database
-            if not existing_user_subs_qs.exists():
-                logging.info(f"Subscription {sub.id} is dangling: Canceling.")
-                helpers.billing.cancel_subscription(
-                    stripe_id=sub.id,
-                    reason="Dangling Active Subscription",
-                    cancel_at_period_end=True,
-                )
+        cancel_user_dangling_subs(subscriptions)
     return
+
+
+def cancel_user_dangling_subs(subscriptions: List[Subscription]) -> None:
+    """
+    Cancels dangling subscriptions that exist in Stripe but are not linked
+    to any user subscription in the database.
+
+    Args:
+        subscriptions (List[Subscription]): A list of Stripe Subscription objects
+        to check for dangling status.
+
+    Returns:
+        None
+    """
+    for sub in subscriptions:
+        existing_user_subs_qs = UserSubscription.objects.filter(
+            stripe_id__iexact=f"{sub.id}".strip()
+        )
+        # Check if the subscription exists in database
+        if not existing_user_subs_qs.exists():
+            logging.info(f"Subscription {sub.id} is dangling: Canceling.")
+            helpers.billing.cancel_subscription(
+                stripe_id=sub.id,
+                reason="Dangling Active Subscription",
+                cancel_at_period_end=True,
+            )
 
 
 def sync_subscription_group_permissions() -> None:

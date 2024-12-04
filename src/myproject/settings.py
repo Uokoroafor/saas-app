@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from decouple import config
 from pathlib import Path
 import os
-from logging.handlers import RotatingFileHandler
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -233,7 +232,7 @@ LOGIN_REDIRECT_URL = (
     "/"  # Otherwise it redirects to /accounts/profiles/ which I don't want
 )
 
-DEFAULT_CURRENCY = "gbp"
+DEFAULT_CURRENCY = config("DEFAULT_CURRENCY", cast=str, default="gbp")
 
 # Implementing a Logger
 

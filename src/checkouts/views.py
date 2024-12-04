@@ -1,5 +1,6 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
@@ -124,56 +125,26 @@ def checkout_finalise_view(
     subscription_data = checkout_data
 
     # Retrieve the subscription object
-    try:
-        sub_obj = Subscription.objects.get(
-            subscriptionprice__stripe_id=sub_plan_price_stripe_id
-        )  # Basically a reverse lookup to get the subscription from the subscription price object
-    except Exception as e:
-        msg = f"Error fetching Subscription Object: {e}"
-        warnings.warn(msg, RuntimeWarning)
-        logger.warning(msg)
-        sub_obj = None
+    sub_obj = get_subscription(sub_plan_price_stripe_id)
 
     # Retrieve or create the UserSubscription object
-    try:
-        user_obj = User.objects.get(
-            customer__stripe_id=customer_id
-        )  # Basically a reverse lookup to get the subscription from the subscription price object
-    except Exception as e:
-        msg = f"Error fetching User Object: {e}"
-        warnings.warn(msg, RuntimeWarning)
-        logger.warning(msg)
-        user_obj = None
+    user_obj = get_user_subscription(customer_id)
+
     context: Dict[str, str] = {}
 
-    _user_sub_exists = False
     updated_sub_options = {
         "subscription": sub_obj,
         "stripe_id": sub_stripe_id,
         "user_cancelled": False,
         **subscription_data,
     }
-    try:
-        _user_sub_obj = UserSubscription.objects.get(user=user_obj)
-        _user_sub_exists = True
-    except UserSubscription.DoesNotExist:
-        _user_sub_obj = UserSubscription.objects.create(
-            user=user_obj, **updated_sub_options
-        )
-    except Exception as e:
-        msg = f"Error fetching User's subscription: {e}"
-        warnings.warn(msg, RuntimeWarning)
-        logger.warning(msg)
-        _user_sub_obj = None
-
-    logger.info(
-        "Subscription",
-        sub_obj,
-        "\nUser",
-        user_obj,
-        "\nUser Subscription",
-        _user_sub_obj,
+    _user_sub_exists, _user_sub_obj = get_or_create_user_subscription_object(
+        user_obj, updated_sub_options
     )
+
+    # Log Subscription, User and User Subscription
+    logger.info(f"Subscription:{sub_obj.name} - User:{user_obj.username}")
+
     # Error handling for missing objects
     if None in [sub_obj, user_obj, _user_sub_obj]:
         logger.error(
@@ -186,17 +157,8 @@ def checkout_finalise_view(
     if _user_sub_exists:
         # cancel existing subscription if it exists
         old_stripe_id = _user_sub_obj.stripe_id
-        same_stripe_id = sub_stripe_id == old_stripe_id
-        if old_stripe_id is not None and not same_stripe_id:
-            try:
-                helpers.billing.cancel_subscription(
-                    old_stripe_id,
-                    reason="Created new membership. Auto cancelling old membership",
-                )
-            except Exception as e:
-                msg = f"Error fetching User Object: {e}"
-                warnings.warn(msg, RuntimeWarning)
-                logger.warning(msg)
+
+        cancel_existing_sub_if_any(old_stripe_id, sub_stripe_id)
 
         # Update the UserSubscription object in the database
         for key, value in updated_sub_options.items():
@@ -205,3 +167,110 @@ def checkout_finalise_view(
         messages.success(request, "Success. Great to have you onboard!")
         return redirect(_user_sub_obj.get_absolute_url())
     return render(request, "checkout/success.html", context=context)
+
+
+def cancel_existing_sub_if_any(
+    old_stripe_id: Optional[str], stripe_id: Optional[str]
+) -> None:
+    """
+    Cancels the old subscription if a new one is created with a different Stripe ID.
+
+    Args:
+        old_stripe_id (Optional[str]): The Stripe ID of the existing subscription to cancel.
+        stripe_id (Optional[str]): The Stripe ID of the new subscription to compare with the old one.
+
+    Returns:
+        None: This function does not return anything.
+    """
+    same_stripe_id = stripe_id == old_stripe_id
+    if old_stripe_id is not None and not same_stripe_id:
+        try:
+            helpers.billing.cancel_subscription(
+                old_stripe_id,
+                reason="Created new membership. Auto cancelling old membership",
+            )
+        except Exception as e:
+            msg = (
+                f"Error cancelling subscription with ID '{old_stripe_id}': {e}"
+            )
+            warnings.warn(msg, RuntimeWarning)
+            logger.warning(msg)
+
+
+def get_user_subscription(customer_id: str) -> Optional[AbstractUser]:
+    """
+    Retrieves the `AbstractUser` object associated with the given Stripe customer ID.
+
+    Args:
+        customer_id (str): The Stripe customer ID used to look up the user.
+
+    Returns:
+        Optional[AbstractUser]: The user object associated with the customer ID,
+        or `None` if an error occurs or the user is not found.
+    """
+    try:
+        user_obj = User.objects.get(
+            customer__stripe_id=customer_id
+        )  # Basically a reverse lookup to get the subscription from the subscription price object
+    except Exception as e:
+        msg = f"Error fetching User Object: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
+        user_obj = None
+    return user_obj
+
+
+def get_subscription(sub_plan_price_stripe_id: str) -> Optional[Subscription]:
+    """
+    Retrieves the `Subscription` object associated with the given Stripe price ID.
+
+    Args:
+        sub_plan_price_stripe_id (str): The Stripe price ID used to look up the subscription.
+
+    Returns:
+        Optional[Subscription]: The subscription object associated with the price ID,
+        or `None` if an error occurs or the subscription is not found.
+    """
+    try:
+        sub_obj = Subscription.objects.get(
+            subscriptionprice__stripe_id=sub_plan_price_stripe_id
+        )  # Basically a reverse lookup to get the subscription from the subscription price object
+    except Exception as e:
+        msg = f"Error fetching Subscription Object: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
+        sub_obj = None
+    return sub_obj
+
+
+def get_or_create_user_subscription_object(
+    user_obj: AbstractUser,
+    updated_sub_options: Dict[str, Union[str, int, bool]],
+) -> Tuple[bool, Optional[UserSubscription]]:
+    """
+    Retrieves or creates a `UserSubscription` object for a given user.
+
+    Args:
+        user_obj (AbstractUser): The user for whom the subscription object is being retrieved or created.
+        updated_sub_options (Dict[str, Union[str, int, bool]]):
+            A dictionary containing additional options or data to update the `UserSubscription`.
+
+    Returns:
+        Tuple[bool, Optional['UserSubscription']]:
+            A tuple containing a boolean indicating if the subscription existed (`True` if it exists)
+            and the `UserSubscription` object itself (or `None` if an error occurred).
+    """
+    _user_sub_exists = False
+    try:
+        _user_sub_obj = UserSubscription.objects.get(user=user_obj)
+        _user_sub_exists = True
+    except UserSubscription.DoesNotExist:
+        _user_sub_obj = UserSubscription.objects.create(
+            user=user_obj, **updated_sub_options
+        )
+    except Exception as e:
+        msg = f"Error fetching User's subscription: {e}"
+        warnings.warn(msg, RuntimeWarning)
+        logger.warning(msg)
+        _user_sub_obj = None
+    return _user_sub_exists, _user_sub_obj
