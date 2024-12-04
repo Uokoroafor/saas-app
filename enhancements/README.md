@@ -41,7 +41,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 
 ### 5. **Code Refactoring**
 - [ ] Identify and reduce duplication across the codebase
-- [ ] Break down large views or methods into smaller components
+- [X] Break down large views or methods into smaller components
 <!-- - [ ] Optimise database queries with Django ORM tools
 - [ ] Extract business logic into service classes or utilities -->
 
