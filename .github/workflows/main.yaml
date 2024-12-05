@@ -33,8 +33,6 @@ jobs:
       SCHEDULE_TYPE: ${{ github.event_name == 'schedule'}}
     
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
       
       - name: Grab Database URL
         run: |

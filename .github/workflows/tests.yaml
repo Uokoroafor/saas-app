@@ -26,9 +26,6 @@ jobs:
       NEON_PROD_BRANCH: "main"
       NEON_GITHUB_BRANCH: "gh-test"
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      
       - name: Delete previous branch version
         continue-on-error: true
         run: |
