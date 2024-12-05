@@ -5,17 +5,19 @@ on:
       db_test:
         description: 'Schedule type'
         required: false
-        default: false
+        default: 'true'
   schedule:
     - cron: '0 1 20 * *' # Clean up every 20th day of the month at 01:00 AM UTC
     - cron: '1 0 1 * *'  # Sync User Subs every 1st day of the month at 00:01 AM UTC
 jobs:
   setup-environment:
     runs-on: ubuntu-latest
-    uses: ./.github/workflows/setup-python-node-neon.yaml
-    with:
-      python-version: '3.12'
-      node-version: '20'
+    steps:
+      - name: Call reusable workflow
+        uses: ./.github/workflows/setup-python-node-neon.yaml
+        with:
+          python-version: '3.12'
+          node-version: '20'
   
   tidy_up:
     name: Tidy Up Environment and Syncronise Subscriptions
@@ -28,7 +30,7 @@ jobs:
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
       NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
       NEON_PROD_BRANCH: "main"
-      SCHEDULE_TYPE: ${{ github.event_name == 'schedule' }}
+      SCHEDULE_TYPE: ${{ github.event_name == 'schedule'}}
     
     steps:
       - name: Checkout Code
@@ -42,12 +44,13 @@ jobs:
             exit 1
           fi
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >> $GITHUB_ENV
+          export DATABASE_URL=$DB_CONNECTION_STRING
       
       - name: Test Database Connection
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
         run: |
           echo "Testing database connection..."
-          python -c "import psycopg2; conn = psycopg2.connect('${{ env.DATABASE_URL }}'); print('DB Connection Successful')"
+          python -c "import psycopg2; conn = psycopg2.connect('$DATABASE_URL'); print('DB Connection Successful')"
 
       - name: Print Connection Successful!
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
@@ -58,11 +61,6 @@ jobs:
           GENERATED_KEY=$(openssl rand -base64 32)
           echo "DJANGO_SECRET_KEY=$GENERATED_KEY" >> $GITHUB_ENV
       
-      # - name: Install Python Requirements
-      #   run: |
-      #     python -m pip install pip --upgrade
-      #     python -m pip install -r requirements.txt
-
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
@@ -79,13 +77,13 @@ jobs:
       
       
       - name: Synchronise User Subscriptions
-        if: env.SCHEDULE_TYPE && startsWith(github.event.cron, '1 0 1 * *')
+        if: github.event.schedule=='1 0 1 * *'
         working-directory: ./src
         run: |
           python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
       
       - name: Clear Unmatched Stripe Subscriptions Commands
-        if: env.SCHEDULE_TYPE && startsWith(github.event.cron, '0 1 20 * *')
+        if: github.event.schedule=='0 1 20 * *'
         working-directory: ./src
         run: |
           python manage.py sync_user_subscriptions --clear-dangling

@@ -8,10 +8,12 @@ on:
 jobs:
   setup-environment:
     runs-on: ubuntu-latest
-    uses: ./.github/workflows/setup-python-node-neon.yaml
-    with:
-      python-version: '3.12'
-      node-version: '20'
+    steps:
+      - name: Call reusable workflow
+        uses: ./.github/workflows/setup-python-node-neon.yaml
+        with:
+          python-version: '3.12'
+          node-version: '20'
   
   
   test:
@@ -45,11 +47,6 @@ jobs:
         run: |
           GENERATED_KEY=$(openssl rand -base64 32)
           echo "DJANGO_SECRET_KEY=$GENERATED_KEY" >> $GITHUB_ENV
-      
-      # - name: Install Requirements
-      #   run: |
-      #     python -m pip install pip --upgrade
-      #     python -m pip install -r requirements.txt
       
       - name: Install Poetry
         run: |
