@@ -55,7 +55,7 @@ ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 ARG DJANGO_DEBUG=0
 ENV DJANGO_DEBUG=${DJANGO_DEBUG}
 
-RUN poetrypython manage.py vendor_pull
+RUN python manage.py vendor_pull
 RUN python manage.py collectstatic --noinput
 
 # whitenoise -> object storage like s3 might be better
