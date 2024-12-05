@@ -33,8 +33,14 @@ RUN mkdir -p /code
 # Set the working directory to that same code directory
 WORKDIR /code
 
-# Copy the rpoetry files to install depedencies and cache
+# Copy the poetry files to install depedencies and cache
 COPY poetry.lock pyproject.toml /code/
+
+# Export the dependencies to requirements.txt
+RUN poetry export -f requirements.txt --without-hashes -o proj_requirements.txt
+
+# Install dependencies directly using pip
+RUN pip install --no-cache-dir -r proj_requirements.txt
 
 # copy the project code into the container's working directory
 COPY ./src /code
@@ -49,7 +55,7 @@ ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 ARG DJANGO_DEBUG=0
 ENV DJANGO_DEBUG=${DJANGO_DEBUG}
 
-RUN python manage.py vendor_pull
+RUN poetrypython manage.py vendor_pull
 RUN python manage.py collectstatic --noinput
 
 # whitenoise -> object storage like s3 might be better

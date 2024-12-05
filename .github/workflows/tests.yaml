@@ -6,18 +6,7 @@ on:
       - main
 
 jobs:
-  setup-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call reusable workflow
-        uses: ./.github/workflows/setup-python-node-neon.yaml
-        with:
-          python-version: '3.12'
-          node-version: '20'
-  
-  
   test:
-    needs: setup-environment
     runs-on: ubuntu-latest
     env:
       DJANGO_DEBUG: 0
@@ -29,6 +18,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
       
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11'
+
+      - name: Install Neon CLI
+        run: npm install -g neonctl      
       - name: Delete previous branch version
         continue-on-error: true
         run: |
@@ -50,8 +51,8 @@ jobs:
       
       - name: Install Poetry
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install poetry
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install Dependencies with Poetry
         run: |
@@ -60,12 +61,12 @@ jobs:
       - name: Make Django DB Migrations
         working-directory: ./src
         run: |
-          python manage.py migrate
+          poetry run python manage.py migrate
       
       - name: Run Django Tests
         working-directory: ./src
         run: |
-          python manage.py test
+          poetry run python manage.py test
       
       - name: Clean Up Test branch
         continue-on-error: true

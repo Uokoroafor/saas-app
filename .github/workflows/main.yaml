@@ -10,18 +10,8 @@ on:
     - cron: '0 1 20 * *' # Clean up every 20th day of the month at 01:00 AM UTC
     - cron: '1 0 1 * *'  # Sync User Subs every 1st day of the month at 00:01 AM UTC
 jobs:
-  setup-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call reusable workflow
-        uses: ./.github/workflows/setup-python-node-neon.yaml
-        with:
-          python-version: '3.12'
-          node-version: '20'
-  
   tidy_up:
     name: Tidy Up Environment and Syncronise Subscriptions
-    needs: setup-environment
     runs-on: ubuntu-latest
     env:
       DJANGO_DEBUG: 0
@@ -36,6 +26,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
       
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11'
+
+      - name: Install Neon CLI
+        run: npm install -g neonctl   
+      
       - name: Grab Database URL
         run: |
           DB_CONNECTION_STRING=$(neonctl connections-string --branch "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROJECT_ID }}")
@@ -46,16 +49,6 @@ jobs:
           echo "DATABASE_URL=$DB_CONNECTION_STRING" >> $GITHUB_ENV
           export DATABASE_URL=$DB_CONNECTION_STRING
       
-      - name: Test Database Connection
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
-        run: |
-          echo "Testing database connection..."
-          python -c "import psycopg2; conn = psycopg2.connect('$DATABASE_URL'); print('DB Connection Successful')"
-
-      - name: Print Connection Successful!
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
-        run: echo "Successfully Connected to DB"
-      
       - name: Setup Django Secret Key
         run: |
           GENERATED_KEY=$(openssl rand -base64 32)
@@ -63,27 +56,37 @@ jobs:
       
       - name: Install Poetry
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install poetry
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install Dependencies with Poetry
         run: |
           poetry install --no-interaction --no-ansi
       
+      - name: Test Database Connection
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
+        run: |
+          echo "Testing database connection..."
+          poetry run python -c "import psycopg2; conn = psycopg2.connect('$DATABASE_URL'); print('DB Connection Successful')"
+  
+      - name: Print Connection Successful!
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
+        run: echo "Successfully Connected to DB"
+      
       - name: Apply Django DB Migrations
         working-directory: ./src
         run: |
-          python manage.py migrate
+          poetry run python manage.py migrate
       
       
       - name: Synchronise User Subscriptions
         if: github.event.schedule=='1 0 1 * *'
         working-directory: ./src
         run: |
-          python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
+          poetry run python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
       
       - name: Clear Unmatched Stripe Subscriptions Commands
         if: github.event.schedule=='0 1 20 * *'
         working-directory: ./src
         run: |
-          python manage.py sync_user_subscriptions --clear-dangling
+          poetry run python manage.py sync_user_subscriptions --clear-dangling
