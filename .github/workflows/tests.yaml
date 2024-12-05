@@ -1,23 +1,12 @@
 name: django-tests-with-db-neon
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
-      - feat/hotfix-ci_cd_yamls
+      - main
 
 jobs:
-  setup-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call reusable workflow
-        uses: ./.github/workflows/setup-python-node-neon.yaml
-        with:
-          python-version: '3.12'
-          node-version: '20'
-  
-  
   test:
-    needs: setup-environment
     runs-on: ubuntu-latest
     env:
       DJANGO_DEBUG: 0
@@ -26,6 +15,21 @@ jobs:
       NEON_PROD_BRANCH: "main"
       NEON_GITHUB_BRANCH: "gh-test"
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11'
+
+      - name: Install Neon CLI
+        run: npm install -g neonctl      
       - name: Delete previous branch version
         continue-on-error: true
         run: |
