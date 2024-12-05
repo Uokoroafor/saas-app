@@ -1,0 +1,28 @@
+name: Setup Python and Node.js
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Install Neon CLI
+        run: npm install -g neonctl

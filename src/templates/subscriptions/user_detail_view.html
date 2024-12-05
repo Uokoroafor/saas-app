@@ -1,29 +1,34 @@
-{%extends 'base.html' %}
-
-{% block head_title %} Your Subscription {{block.super}} {% endblock head_title %}
-
-{% block content%} 
-<form action="" method="POST">{% csrf_token %}
-    <button type="submit" >Refresh</button>
+{%extends 'dashboard/base.html' %} {% block head_title %} Your Subscription
+{{block.super}} {% endblock head_title %} {% block content%}
+<form action="" method="POST">
+  {% csrf_token %}
+  <button type="submit">Refresh</button>
 </form>
 
 <h1 class="text-lg font-medium">Your Current Subscription</h1>
-
-
 
 <!-- {% for k,v in subscription.items %}
 <p>{{k}}: {{v}}</p>
 {%endfor %} -->
 
-<p>Plan name: {{subscription.plan_name | title}} ({{subscription.get_status_display|title}})</p>
+<p>
+  Plan name: {{subscription.plan_name | title}}
+  ({{subscription.get_status_display|title}})
+</p>
 
 <!-- <p>Status: {{subscription.status|title}}</p> -->
 
 <p>Start Date: {{subscription.current_period_start}}</p>
 
-<p>End Date: {{subscription.current_period_end}} ({{subscription.current_period_end | timeuntil}})</p>
+<p>
+  End Date: {{subscription.current_period_end}}
+  ({{subscription.current_period_end | timeuntil}})
+</p>
 
-<p> Member for {{subscription.original_period_start | timesince}} (since {{subscription.original_period_start}} )</p>
+<p>
+  Member for {{subscription.original_period_start | timesince}} (since
+  {{subscription.original_period_start}} )
+</p>
 
 <a href="{{ subscription.get_cancel_url }}">Cancel Subscription?</a>
 {%endblock content %}

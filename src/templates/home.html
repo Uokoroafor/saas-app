@@ -1,8 +1,7 @@
-{%extends 'base.html' %}
+{%extends 'base.html' %} {% block head_title %} Myotha's Page {{block.super}} {%endblock head_title %} 
 
-{% block head_title %} Myotha's Page {{block.super}} {% endblock head_title %}
-
-{% block content%} <p> Hello World or something of that ilk</p> 
+{% block content%}
+<p>Hello World or something of that ilk</p>
 {% include 'snippets/welcome-user-msg.html' %}
 <p>Page Visits: {{page_visit_count}}</p>
 

@@ -1,0 +1,16 @@
+name: 1-hello World on github
+
+on:
+  workflow_dispatch: # Means I can run this at any time
+  schedule:
+    - cron: '30 15 * * *' # At 15:30 everyday # Look up crontab guru for cron help
+  push:
+    branch:
+      -main
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      -name: Hello there
+        run: echo "Hello!"

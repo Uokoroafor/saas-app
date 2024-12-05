@@ -7,8 +7,8 @@ RUN python -m venv /opt/.venv
 # Set the Virtual Environment as current location
 ENV PATH=/opt/.venv/bin:$PATH
 
-# Upgrade pip
-RUN pip install --upgrade pip
+# Upgrade pip and install poetry
+RUN pip install --upgrade pip && pip install poetry
 
 # Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -33,14 +33,15 @@ RUN mkdir -p /code
 # Set the working directory to that same code directory
 WORKDIR /code
 
-# Copy the requirements file into the container
-COPY requirements.txt /tmp/requirements.txt
+# Copy the rpoetry files to install depedencies and cache
+COPY poetry.lock pyproject.toml /code/
 
 # copy the project code into the container's working directory
 COPY ./src /code
 
-# Install the Python project requirements
-RUN pip install -r /tmp/requirements.txt
+# Install dependencies via Poetry
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi
 
 ARG DJANGO_SECRET_KEY
 ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}

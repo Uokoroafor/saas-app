@@ -20,6 +20,7 @@ from django.urls import path, include
 from auth import views as auth_views
 from subscriptions import views as subscription_views
 from checkouts import views as checkout_views
+from landing import views as landing_views
 from .views import (
     home_page_view,
     about_view,
@@ -29,11 +30,15 @@ from .views import (
 )
 
 urlpatterns = [
-    path("", home_page_view, name="home"),  # Root page
+    path(
+        "", landing_views.landing_dashboard_page_view, name="home"
+    ),  # Root page
     path("hello-world/", home_page_view),
     path("login/", auth_views.login_view),
     path("register/", auth_views.register_view),
-    path("pricing/", subscription_views.subscription_price_view, name="pricing"),
+    path(
+        "pricing/", subscription_views.subscription_price_view, name="pricing"
+    ),
     path(
         "pricing/<str:interval>/",
         subscription_views.subscription_price_view,

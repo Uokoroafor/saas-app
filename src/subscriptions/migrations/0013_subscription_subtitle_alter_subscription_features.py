@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("subscriptions", "0012_remove_subscriptionprice_features_and_more"),
     ]

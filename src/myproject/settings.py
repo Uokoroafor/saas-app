@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-import os
 from decouple import config
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -231,3 +231,49 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = (
     "/"  # Otherwise it redirects to /accounts/profiles/ which I don't want
 )
+
+DEFAULT_CURRENCY = config("DEFAULT_CURRENCY", cast=str, default="gbp")
+
+# Implementing a Logger
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "rotating_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "django.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5 MB
+            "backupCount": 3,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "rotating_file"],
+            "level": "WARNING",
+            "propagate": True,
+        },
+        "myproject": {
+            "handlers": ["rotating_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
