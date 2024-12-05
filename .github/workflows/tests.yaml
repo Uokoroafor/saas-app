@@ -1,9 +1,9 @@
 name: django-tests-with-db-neon
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
-      - feat/hotfix-ci_cd_yamls
+      - main
 
 jobs:
   test:
