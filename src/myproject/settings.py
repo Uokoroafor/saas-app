@@ -161,7 +161,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "MyothaVids Site: "
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "My SaaS App Site: "
 AUTHENTICATION_BACKENDS = [
     # ...
     # Needed to login by username in Django admin, regardless of `allauth`
