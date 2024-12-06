@@ -7,16 +7,10 @@
 
 <h1 class="text-lg font-medium">Your Current Subscription</h1>
 
-<!-- {% for k,v in subscription.items %}
-<p>{{k}}: {{v}}</p>
-{%endfor %} -->
-
 <p>
   Plan name: {{subscription.plan_name | title}}
   ({{subscription.get_status_display|title}})
 </p>
-
-<!-- <p>Status: {{subscription.status|title}}</p> -->
 
 <p>Start Date: {{subscription.current_period_start}}</p>
 
