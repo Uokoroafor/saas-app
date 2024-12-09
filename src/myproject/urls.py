@@ -27,6 +27,8 @@ from .views import (
     pw_protected_view,
     user_only_view,
     staff_only_view,
+    contact,
+    contact_success,
 )
 
 urlpatterns = [
@@ -77,4 +79,7 @@ urlpatterns = [
     path("protected/staff-only/", staff_only_view),
     path("profiles/", include("profiles.urls")),
     path("admin/", admin.site.urls),
+    path("contact/", contact, name="contact"),
+    path("contact/success", contact_success, name="contact_success"),
+    path("captcha/", include("captcha.urls")),
 ]

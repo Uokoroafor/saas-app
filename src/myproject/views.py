@@ -1,8 +1,12 @@
 from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
+from django.core.mail import send_mail
+from django.urls import reverse
+from smtplib import SMTPException
+from .forms import ContactForm
 from visits.models import PageVisit
 import pathlib
 from typing import Any
@@ -173,3 +177,88 @@ def staff_only_view(
     return render(
         request=request, template_name="protected/user-only.html", context={}
     )
+
+
+def send_contact_email(
+    name: str, email: str, subject: str, message: str
+) -> None:
+    """
+    Sends a contact email to the configured recipient.
+
+    Args:
+        name (str): The name of the contact.
+        email (str): The email address of the contact.
+        subject (str): The subject of the message.
+        message (str): The message content.
+    """
+    email_subject = f"Customer Contact: ({email}), Subject: {subject}"
+    email_body = (
+        f"Hello, you received a contact request from your customer {name} "
+        f"with email {email} below. \n\n----------------------------------\n\n{message}"
+    )
+    send_mail(
+        subject=email_subject,
+        message=email_body,
+        from_email=email,
+        recipient_list=[settings.EMAIL_HOST_USER],
+        fail_silently=False,
+    )
+
+
+def contact(request: HttpRequest) -> HttpResponse:
+    """
+    Handles the contact form submission and sends an email with the submitted data.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: Renders the contact form view or redirects to the success page on submission.
+    """
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data["name"]
+            email = form.cleaned_data["email"]
+            subject = form.cleaned_data["subject"]
+            message = form.cleaned_data["message"]
+
+            try:
+                # Send an email
+                send_contact_email(
+                    name=name, email=email, subject=subject, message=message
+                )
+                return redirect(reverse("contact_success"))
+
+            except SMTPException as e:
+                logger.error(
+                    f"SMTPException occurred while sending email: {e}"
+                )
+                form.add_error(
+                    None,
+                    "There was an error sending your message. Please try again later.",
+                )
+
+            except Exception as e:
+                logger.error(f"Error sending contact email: {e}")
+                form.add_error(
+                    None,
+                    "There was an error sending your message. Please try again later.",
+                )
+    else:
+        form = ContactForm()
+
+    return render(request, "contact/view.html", {"form": form})
+
+
+def contact_success(request: HttpRequest) -> HttpResponse:
+    """
+    Displays the success message after a successful contact form submission.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: Renders the contact success page.
+    """
+    return render(request, "contact/success.html")

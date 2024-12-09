@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "widget_tweaks",
     "slippers",
+    "captcha",
 ]
 
 MIDDLEWARE = [
@@ -161,7 +162,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "MyothaVids Site: "
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "My SaaS App Site: "
 AUTHENTICATION_BACKENDS = [
     # ...
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -277,3 +278,12 @@ LOGGING = {
         },
     },
 }
+
+# Optional CAPTCHA settings
+CAPTCHA_CHALLENGE_FUNCT = (
+    "captcha.helpers.math_challenge"  # Use math challenges
+)
+CAPTCHA_LENGTH = 6  # Number of characters in CAPTCHA
+CAPTCHA_TIMEOUT = 5  # Minutes before CAPTCHA expires
+CAPTCHA_IMAGE_SIZE = [200, 200]
+CAPTCHA_FONT_SIZE = 30

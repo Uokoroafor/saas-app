@@ -13,3 +13,4 @@ django-widget-tweaks
 slippers
 stripe
 pre-commit
+django-simple-captcha
