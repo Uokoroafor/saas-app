@@ -40,7 +40,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [X] Automate linting and type-checking using pre-commit hooks
 
 ### 5. **Code Refactoring**
-- [ ] Identify and reduce duplication across the codebase
+- [X] Identify and reduce duplication across the codebase
 - [X] Break down large views or methods into smaller components
 <!-- - [ ] Optimise database queries with Django ORM tools
 - [ ] Extract business logic into service classes or utilities -->
@@ -52,7 +52,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 
 ### 7. **Front-End Redesign**
 - [ ] Redesign the front-end for improved usability and responsiveness
-- [ ] Add a 'Contact Us' page
+- [X] Add a 'Contact Us' page
 - [ ] Build other main page components
 
 ### 8. **Implement Back-End Logger**
