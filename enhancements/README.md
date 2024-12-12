@@ -18,7 +18,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 1. **Workflow Changes**
 - [X] Refactor GitHub Actions YAML files for efficiency
 - [X] Add reusable workflows for CI/CD
-<!-- - [ ] Integrate notifications for build/test statuses (e.g., Slack or email) -->
+- [ ] Integrate notifications for build/test statuses (e.g., Slack or email)
 
 ### 2. **Testing**
 - [ ] Build a testing suite using `pytest` 
