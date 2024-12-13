@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.conf import settings
 import helpers.billing
+import helpers.currency_utils
 from django.urls import reverse
 from django.utils import timezone
 import datetime
@@ -270,6 +271,15 @@ class SubscriptionPrice(models.Model):
             str: The currency code for the subscription, defaulting to settings.DEFAULT_CURRENCY.
         """
         return getattr(self, "currency", settings.DEFAULT_CURRENCY)
+
+    @property
+    def stripe_currency_symbol(self) -> str:
+        """Returns the currency symbol used for the subscription.
+
+        Returns:
+            str: The currency symbol for the subscription will return unk if not known.
+        """
+        return helpers.currency_utils.get_currency_symbol(self.stripe_currency)
 
     @property
     def stripe_price(self) -> int:

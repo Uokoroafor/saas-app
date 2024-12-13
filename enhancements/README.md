@@ -18,7 +18,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 1. **Workflow Changes**
 - [X] Refactor GitHub Actions YAML files for efficiency
 - [X] Add reusable workflows for CI/CD
-<!-- - [ ] Integrate notifications for build/test statuses (e.g., Slack or email) -->
+- [ ] Integrate notifications for build/test statuses (e.g., Slack or email)
 
 ### 2. **Testing**
 - [ ] Build a testing suite using `pytest` 
@@ -40,7 +40,7 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [X] Automate linting and type-checking using pre-commit hooks
 
 ### 5. **Code Refactoring**
-- [ ] Identify and reduce duplication across the codebase
+- [X] Identify and reduce duplication across the codebase
 - [X] Break down large views or methods into smaller components
 <!-- - [ ] Optimise database queries with Django ORM tools
 - [ ] Extract business logic into service classes or utilities -->
@@ -52,6 +52,8 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 
 ### 7. **Front-End Redesign**
 - [ ] Redesign the front-end for improved usability and responsiveness
+- [X] Add a 'Contact Us' page
+- [ ] Build other main page components
 
 ### 8. **Implement Back-End Logger**
 - [X] Remove unnecessary instances of the print function
