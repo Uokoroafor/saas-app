@@ -194,8 +194,6 @@ def send_contact_email(
     """
     email_subject = f"Customer Inquiry: {subject}"
     email_body = (
-        # f"Hello, you received a contact request from your customer {name} "
-        # f"with email {email} below. \n\n----------------------------------\n\n{message}"
         f"Dear Support Team,\n\n"
         f"You have received a new contact request from a customer.\n\n"
         f"--- Contact Details ---\n"
