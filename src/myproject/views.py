@@ -5,6 +5,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.utils.timezone import now
 from smtplib import SMTPException
 from .forms import ContactForm
 from visits.models import PageVisit
@@ -191,10 +192,22 @@ def send_contact_email(
         subject (str): The subject of the message.
         message (str): The message content.
     """
-    email_subject = f"Customer Contact: ({email}), Subject: {subject}"
+    email_subject = f"Customer Inquiry: {subject}"
     email_body = (
-        f"Hello, you received a contact request from your customer {name} "
-        f"with email {email} below. \n\n----------------------------------\n\n{message}"
+        # f"Hello, you received a contact request from your customer {name} "
+        # f"with email {email} below. \n\n----------------------------------\n\n{message}"
+        f"Dear Support Team,\n\n"
+        f"You have received a new contact request from a customer.\n\n"
+        f"--- Contact Details ---\n"
+        f"Name: {name}\n"
+        f"Email: {email}\n"
+        f"Subject: {subject}\n"
+        f"Time: {now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+        f"--- Message ---\n\n"
+        f"{message}\n\n"
+        f"--- End of Message ---\n\n"
+        f"Best regards,\n"
+        f"The Contact Form"
     )
     send_mail(
         subject=email_subject,
