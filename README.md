@@ -27,10 +27,10 @@ cd saas-app
 
 There are two options for running - either via docker or a fully local implementation:
 ### 1. Running via Docker
+Make sure you have [Docker](https://docs.docker.com/engine/install/) is installed locally.
 ```bash
 docker compose up
 ```
-
 ### 2. Running Locally
 - Install [Poetry](https://python-poetry.org/) for dependency management.
 - Set up your environment:
