@@ -4,8 +4,9 @@ services:
   web:
     build:
       context: ./src
+      dockerfile: Dockerfile.app
     container_name: django_app
-    command: python manage.py runserver 0.0.0.0:8000
+    # command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./src:/app
     ports:
@@ -21,7 +22,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: django_db
+      POSTGRES_DB: saas_database
     ports:
       - "5432:5432"
     volumes:
