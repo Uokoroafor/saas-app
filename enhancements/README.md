@@ -18,42 +18,42 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 ### 1. **Workflow Changes**
 - [X] Refactor GitHub Actions YAML files for efficiency
 - [X] Add reusable workflows for CI/CD
-- [ ] Integrate notifications for build/test statuses (e.g., Slack or email)
+- [X] Integrate notifications for build/test statuses (e.g., Slack or email)
 
-### 2. **Testing**
+<!-- ### 2. **Testing**
 - [ ] Build a testing suite using `pytest` 
   - [ ] Unit tests for critical functions
   - [ ] Integration tests for end-to-end workflows
 - [ ] Measure test coverage with `coverage.py`
-- [ ] Add automated testing to CI/CD pipeline
+- [ ] Add automated testing to CI/CD pipeline -->
 
-### 3. **Dockerisation**
+### 2. **Dockerisation**
 - [X] Create a `Dockerfile` for the application
-- [ ] Set up `docker-compose.yml` for full-stack containerisation (e.g., Django + PostgreSQL)
+- [X] Set up `docker-compose.yml` for full-stack containerisation 
 - [ ] Optimise Docker image size using multi-stage builds
-- [ ] Document setup instructions for running the Dockerised version locally
+- [X] Document setup instructions for running the Dockerised version locally
 
-### 4. **Linting and Code Style**
+### 3. **Linting and Code Style**
 - [X] Add type hints to all functions and methods
 - [X] Write detailed docstrings following a consistent style guide
-- [X] Set up `mypy`, `ruff` and `black` for linting and type-checking
+- [X] Set up `mypy` and `ruff` for linting and type-checking
 - [X] Automate linting and type-checking using pre-commit hooks
 
-### 5. **Code Refactoring**
+### 4. **Code Refactoring**
 - [X] Identify and reduce duplication across the codebase
 - [X] Break down large views or methods into smaller components
 
 
-### 6. **Dependency Management**
+### 5. **Dependency Management**
 - [X] Transition from `requirements.txt` to Poetry (`pyproject.toml`)
-- [ ] Document how to use Poetry for dependency management
+- [X] Document how to use Poetry for dependency management
 - [X] Set up a fallback `requirements.txt` export for compatibility
 
-### 7. **Front-End Redesign**
+### 6. **Front-End Redesign**
 - [ ] Redesign the front-end for improved usability and responsiveness
 - [X] Add a 'Contact Us' page
 - [ ] Build other main page components
 
-### 8. **Implement Back-End Logger**
+### 7. **Implement Back-End Logger**
 - [X] Remove unnecessary instances of the print function
 - [X] Implement a Logger
