@@ -6,9 +6,9 @@ on:
         description: 'Schedule type'
         required: false
         default: 'true'
-  schedule:
-    - cron: '0 1 20 * *' # Clean up every 20th day of the month at 01:00 AM UTC
-    - cron: '1 0 1 * *'  # Sync User Subs every 1st day of the month at 00:01 AM UTC
+  # schedule:
+  #   - cron: '0 1 20 * *' # Clean up every 20th day of the month at 01:00 AM UTC
+  #   - cron: '1 0 1 * *'  # Sync User Subs every 1st day of the month at 00:01 AM UTC
 jobs:
   tidy_up:
     name: Tidy Up Environment and Syncronise Subscriptions
@@ -80,13 +80,15 @@ jobs:
       
       
       - name: Synchronise User Subscriptions
-        if: github.event.schedule=='1 0 1 * *'
+        # if: github.event.schedule=='1 0 1 * *'
+        if: github.event_name == 'schedule'
         working-directory: ./src
         run: |
           poetry run python manage.py sync_user_subscriptions --verbose --from-days 0 --to-days 1
       
       - name: Clear Unmatched Stripe Subscriptions Commands
-        if: github.event.schedule=='0 1 20 * *'
+        # if: github.event.schedule=='0 1 20 * *'
+        if: github.event_name == 'schedule'
         working-directory: ./src
         run: |
           poetry run python manage.py sync_user_subscriptions --clear-dangling
