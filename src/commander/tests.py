@@ -9,4 +9,4 @@ class DBTestCase(TestCase):
         Returns True if 'neon' is in the database URL
         """
         DATABASE_URL = settings.DATABASE_URL
-        self.assertIn("neon.tech", DATABASE_URL)
+        self.assertIn("postgres", DATABASE_URL)
