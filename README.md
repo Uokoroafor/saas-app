@@ -5,7 +5,7 @@
 
 A Software as a Service (SaaS) platform built using Django, Tailwind, Postgres, and more. It is hosted on Railway with integrated Stripe payment processing. The project serves as a reusable foundation for SaaS products, with customisations to suit unique requirements.
 
-**Live Demo**:[Railway app](https://saas-app-production-1e09.up.railway.app/) 
+**Live Demo**: [Railway app](https://saas-app-production-1e09.up.railway.app/) 
 
 ## Features
 - Secure Stripe Integration for payment processing.
@@ -25,19 +25,7 @@ git clone https://github.com/ubps/saas-app
 cd saas-app
 ```
 
-There are two options for running - either via docker or a fully local implementation:
-### 1. Running via Docker
-Make sure you have [Docker](https://docs.docker.com/engine/install/) is installed locally.
-```bash
-docker compose up
-```
-### 2. Running Locally
-- Install [Poetry](https://python-poetry.org/) for dependency management.
-- Set up your environment:
-    ```bash
-    potry install
-    poetry shell
-    ```
+### Configure .env file
 - Create and configure `.env` with the following values:
     ```plaintext
     BASE_URL = "http://127.0.0.1:8000"
@@ -62,6 +50,20 @@ docker compose up
     ```
 Once you have this value, add update `DJANGO_SECRET_KEY` in the `.env` file.
 
+### Running the app
+There are two options for running - either via docker or a fully local implementation:
+#### 1. Running via Docker
+Make sure you have [Docker](https://docs.docker.com/engine/install/) is installed locally.
+```bash
+docker compose --env-file .env up
+```
+#### 2. Running Locally
+- Install [Poetry](https://python-poetry.org/) for dependency management.
+- Set up your environment:
+    ```bash
+    potry install
+    poetry shell
+    ```
 
 - Setup the database, migration, superuser and vendor files:
     ```bash
@@ -69,18 +71,15 @@ Once you have this value, add update `DJANGO_SECRET_KEY` in the `.env` file.
     python manage.py createsuperuser
     python manage.py vendor_pull
     ```
+#### Run the Server
+```bash
+python manage.py runserver
+```
 
 
 ### Stripe Signup
 1. Sign up on [Stripe.com](https://www.stripe.com)
 2. Generate a Stripe Secret API Key and update the `.env` file under `STRIPE_SECRET_KEY`.
-
-
-### Run the Server
-
-```bash
-python manage.py runserver
-```
 
 ## Screenshots
 
