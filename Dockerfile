@@ -8,7 +8,7 @@ RUN python -m venv /opt/.venv
 ENV PATH=/opt/.venv/bin:$PATH
 
 # Upgrade pip and install poetry
-RUN pip install --upgrade pip && pip install poetry
+RUN pip install --upgrade pip && pip install --no-cache-dir poetry
 
 # Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
