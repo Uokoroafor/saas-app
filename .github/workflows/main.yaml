@@ -41,7 +41,7 @@ jobs:
       
       - name: Grab Database URL
         run: |
-          DB_CONNECTION_STRING=$(neonctl connections-string --branch "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROJECT_ID }}")
+          DB_CONNECTION_STRING=$(neonctl connection-string --branch "${{ env.NEON_PROD_BRANCH }}" --project-id "${{ env.NEON_PROJECT_ID }}")
           if [ -z "$DB_CONNECTION_STRING" ]; then
             echo "Database URL could not be retrieved. Exiting..."
             exit 1
