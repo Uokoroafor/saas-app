@@ -129,7 +129,7 @@ Many thanks to the creators of these resources for making development faster and
 
 **Contact Us**
 
-<img src="screenshots/Contact.png" width=600>
+<img src="screenshots/contact.png" width=600>
 
 **Pricing**
 
