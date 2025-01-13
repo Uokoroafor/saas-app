@@ -67,6 +67,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.db_test == 'true'
         run: |
           echo "Testing database connection..."
+          poetry add psycopg2-binary
           poetry run python -c "import psycopg2; conn = psycopg2.connect('$DATABASE_URL'); print('DB Connection Successful')"
   
       - name: Print Connection Successful!
