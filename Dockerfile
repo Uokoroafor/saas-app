@@ -45,9 +45,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy the project code into the container's working directory
 COPY ./src /code
 
-# Install dependencies via Poetry
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi
+# # Install dependencies via Poetry
+# RUN poetry config virtualenvs.create false && \
+#     poetry install --no-interaction --no-ansi
 
 ARG DJANGO_SECRET_KEY
 ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
