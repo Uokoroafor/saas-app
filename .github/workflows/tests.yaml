@@ -56,7 +56,7 @@ jobs:
 
       - name: Install Dependencies with Poetry
         run: |
-          poetry install --no-interaction --no-ansi
+          poetry install --no-interaction --no-ansi --no-root
       
       - name: Make Django DB Migrations
         working-directory: ./src
