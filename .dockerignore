@@ -93,6 +93,3 @@ venv/
 .ruff_cache/
 .pre-commit-config.yaml
 .pre-commit-ignore
-
-# Image folders
-images/
