@@ -20,13 +20,6 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [X] Add reusable workflows for CI/CD
 - [X] Integrate notifications for build/test statuses (e.g., Slack or email)
 
-<!-- ### 2. **Testing**
-- [ ] Build a testing suite using `pytest` 
-  - [ ] Unit tests for critical functions
-  - [ ] Integration tests for end-to-end workflows
-- [ ] Measure test coverage with `coverage.py`
-- [ ] Add automated testing to CI/CD pipeline -->
-
 ### 2. **Dockerisation**
 - [X] Create a `Dockerfile` for the application
 - [X] Set up `docker-compose.yml` for full-stack containerisation 
@@ -50,9 +43,9 @@ A subscription-based SaaS application built with Django, HTML, CSS, and JavaScri
 - [X] Set up a fallback `requirements.txt` export for compatibility
 
 ### 6. **Front-End Redesign**
-- [ ] Redesign the front-end for improved usability and responsiveness
+- [X] Redesign the front-end for improved usability and responsiveness
 - [X] Add a 'Contact Us' page
-- [ ] Build other main page components
+- [X] Build other main page components
 
 ### 7. **Implement Back-End Logger**
 - [X] Remove unnecessary instances of the print function
