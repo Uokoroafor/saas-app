@@ -34,7 +34,7 @@ RUN mkdir -p /code
 WORKDIR /code
 
 # # Copy the poetry files to install depedencies and cache
-# COPY poetry.lock pyproject.toml /code/
+COPY requirements.txt /code/
 
 # # Export the dependencies to requirements.txt
 # RUN poetry export -f requirements.txt --without-hashes -o proj_requirements.txt
