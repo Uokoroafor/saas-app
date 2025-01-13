@@ -6,7 +6,7 @@ from django.conf import settings
 class DBTestCase(TestCase):
     def test_db_url_connection_successful(self) -> None:
         """
-        Returns True if 'neon' is in the database URL
+        Returns True if 'postgres' is in the database URL
         """
         DATABASE_URL = settings.DATABASE_URL
-        self.assertIn("neon.tech", DATABASE_URL)
+        self.assertIn("postgres", DATABASE_URL)

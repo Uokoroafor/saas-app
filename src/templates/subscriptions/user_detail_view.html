@@ -2,9 +2,10 @@
 {{block.super}} {% endblock head_title %} {% block content%}
 <form action="" method="POST">
   {% csrf_token %}
-  <button type="submit">Refresh</button>
+  <button class="text-gray-500 dark:text-gray-400 mb-4" type="submit">Refresh</button>
 </form>
 
+<br>
 <h1 class="text-lg font-medium">Your Current Subscription</h1>
 
 <p>
@@ -23,6 +24,8 @@
   Member for {{subscription.original_period_start | timesince}} (since
   {{subscription.original_period_start}} )
 </p>
-
-<a href="{{ subscription.get_cancel_url }}">Cancel Subscription?</a>
+<br>
+<div>
+<a class="py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" href="{{ subscription.get_cancel_url }}">Cancel Subscription?</a>
+</div>
 {%endblock content %}
