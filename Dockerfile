@@ -8,7 +8,7 @@ RUN python -m venv /opt/.venv
 ENV PATH=/opt/.venv/bin:$PATH
 
 # Upgrade pip and install poetry
-RUN pip install --upgrade pip && pip install --no-cache-dir poetry
+RUN pip install --upgrade pip
 
 # Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -33,14 +33,14 @@ RUN mkdir -p /code
 # Set the working directory to that same code directory
 WORKDIR /code
 
-# Copy the poetry files to install depedencies and cache
-COPY poetry.lock pyproject.toml /code/
+# # Copy the poetry files to install depedencies and cache
+# COPY poetry.lock pyproject.toml /code/
 
-# Export the dependencies to requirements.txt
-RUN poetry export -f requirements.txt --without-hashes -o proj_requirements.txt
+# # Export the dependencies to requirements.txt
+# RUN poetry export -f requirements.txt --without-hashes -o proj_requirements.txt
 
 # Install dependencies directly using pip
-RUN pip install --no-cache-dir -r proj_requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # copy the project code into the container's working directory
 COPY ./src /code
