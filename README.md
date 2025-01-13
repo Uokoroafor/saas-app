@@ -7,15 +7,14 @@ A Software as a Service (SaaS) platform built using Django, Tailwind, Postgres, 
 
 **Live Demo**: [Railway app](https://saas-app-production-1e09.up.railway.app/) 
 
+This project is inspired by the SaaS foundations course by [Coding for Entrepreneurs](https://github.com/codingforentrepreneurs/SaaS-Foundations) (CFE) which served as an excellent starting point. I extended and tailored the implementation to build a foundation for SaaS projects.
+
 ## Features
-- Secure Stripe Integration for payment processing.
 - Scalable Architecture leveraging Django and Postgres.
 - Responsive Design styled with Tailwind CSS.
+- Stripe Integration for payment processing.
 - Customisable deployment through Docker or local setup.
-- Customisations and Enhancements are details in the [Enhancements ReadMe](enhancements/README.md)
-
-
-This project is inspired by the SaaS foundations course by [Coding for Entrepreneurs](https://github.com/codingforentrepreneurs/SaaS-Foundations) (CFE). While the course served as an excellent starting point, I extended and tailored the implementation to build a unique foundation for SaaS projects.
+- Customisations and Enhancements are detailed in the [Enhancements ReadMe](enhancements/README.md)
 
 ## Getting Started
 
