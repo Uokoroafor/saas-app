@@ -21,7 +21,7 @@ This project is inspired by the SaaS foundations course by [Coding for Entrepren
 
 ### Clone
 ```bash
-git clone https://github.com/ubps/saas-app
+git clone https://github.com/Uokoroafor/saas-app.git
 cd saas-app
 ```
 
@@ -81,7 +81,60 @@ python manage.py runserver
 1. Sign up on [Stripe.com](https://www.stripe.com)
 2. Generate a Stripe Secret API Key and update the `.env` file under `STRIPE_SECRET_KEY`.
 
-## Screenshots
+### Testing out with Stripe
+
+To test the payment features of this project, you can use Stripe's [official test card details](https://docs.stripe.com/testing?testing-method=card-numbers). These cards work only in Stripe's test environment and are safe to use. 
+
+**Please do NOT use any real card details!**
+
+### Test Card Details
+
+Here are some commonly used test cards:
+
+| Card Type            | Card Number      | Expiry Date | CVC  |
+|----------------------|------------------|-------------|------|
+| Visa    | 4242 4242 4242 4242 | Any future date | Any 3 digits | 
+| Masercard | 5555 5555 5555 4444 | Any future date | Any 3 digits |
+| Visa (authentication required) | 3782 822463 10005 | Any future date | Any 4 digits |
+
+
+#### Additional Notes
+
+- Ensure the project is running in **Stripe's test environment** i.e. using a test stripe secret key. Test card details will not work in live mode.
 
 ## Acknowledgements
 Inspired by [Coding for Entrepreneurs](https://github.com/codingforentrepreneurs/SaaS-Foundations)
+
+This project used the following resources:
+
+- **[Flowbite](https://flowbite.com/docs/getting-started/introduction/):** UI components and templates used to design the frontend.
+- **[Lorem Picsum](https://picsum.photos/):** Placeholder images used for visual elements in the application.
+
+Many thanks to the creators of these resources for making development faster and easier!
+
+## Screenshots
+**Landing Page**
+<!-- ![Landing Screenshot](screenshots/Landing.png) -->
+<img src="screenshots/Landing.png">
+
+**Sign Up and Login**
+<p float="left">
+<img src="screenshots/Signup.png" width="320">
+<img src="screenshots/Login.png" width="320">
+</p>
+
+**Dashboard**
+
+<img src="screenshots/Dashboard.png" width=600>
+
+**Contact Us**
+
+<img src="screenshots/Contact.png" width=600>
+
+**Pricing**
+
+<img src="screenshots/Pricing.png" width=600>
+
+**Subscription View**
+
+<img src="screenshots/SubscriptionView.png" width=320>
