@@ -95,7 +95,7 @@ Here are some commonly used test cards:
 |----------------------|------------------|-------------|------|
 | Visa    | 4242 4242 4242 4242 | Any future date | Any 3 digits | 
 | Masercard | 5555 5555 5555 4444 | Any future date | Any 3 digits |
-| Visa (authentication required) | 3782 822463 10005 | Any future date | Any 4 digits |
+| American Express | 3782 822463 10005 | Any future date | Any 4 digits |
 
 
 #### Additional Notes
